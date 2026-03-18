@@ -5,7 +5,6 @@ Shows Claude Code status icons in your tmux window name.
 | Icon | State |
 |------|-------|
 | ⌛️ | Thinking / processing |
-| 🔒 | Waiting for permission |
 | 🔴 | Tool call failed |
 | ✅ | Done |
 
@@ -36,9 +35,6 @@ chmod +x ~/.claude/hooks/tmux-status.sh
   { "hooks": [{ "type": "command", "command": "~/.claude/hooks/tmux-status.sh" }] }
 ],
 "PostToolUseFailure": [
-  { "hooks": [{ "type": "command", "command": "~/.claude/hooks/tmux-status.sh" }] }
-],
-"PermissionRequest": [
   { "hooks": [{ "type": "command", "command": "~/.claude/hooks/tmux-status.sh" }] }
 ],
 "Stop": [

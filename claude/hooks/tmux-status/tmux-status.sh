@@ -6,7 +6,6 @@ if [ -n "$TMUX" ]; then
 
   case "$event" in
     UserPromptSubmit)   icon="⌛️" ;;
-    PermissionRequest)  icon="🔒" ;;
     PreToolUse)         icon="⌛️" ;;
     PostToolUse)        icon="⌛️" ;;
     PostToolUseFailure) icon="🔴" ;;
@@ -18,6 +17,6 @@ if [ -n "$TMUX" ]; then
 
   # Ring terminal bell on stop and permission request
   case "$event" in
-    Stop|PermissionRequest) printf '\a' ;;
+    Stop) printf '\a' ;;
   esac
 fi
