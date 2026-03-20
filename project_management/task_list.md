@@ -31,8 +31,9 @@
 - **Review** — Verify rollout dashboard is working, figure out missing validate_order and get_availability metrics `1pt`
 - **HIGH PRIORITY / Development** — RCA: port to format, present, address action items (FUL-184648) `6pt`
 - **Not started** — Test order invalid fix in dev (after RCA) `3pt`
-- **Mar 21 / Rolling out** — Roll out to 1 location, monitor errors `2pt`
+- **Mar 21 / Rolling out** — Roll out to 1 location, monitor errors `1pt`
 - **Apr 6 / Rolling out** — Roll out to 10 locations `2pt`
+- **Not started** — Roll out to 10% of locations `2pt`
 
 ---
 
@@ -51,6 +52,7 @@
 - **Future** — Add instrumentation wrapper to all Relay APIs `10pt`
 - **Future** — Check on relay observability task force to see what's on there
 - **Future** — Figure out order impact per endpoint `4pt`
+- **Future** — Make empty order_items / won't build order cake product a known error
 
 ---
 
@@ -81,14 +83,14 @@
 | 1. FPS — My Tasks | 2 + 2pt/wk | 2 | 4 + 2pt/wk |
 | 1. 3P Delivery MVP — My Tasks | 27 | — | 27 |
 | 1. Testing | 3 | — | 3 |
-| 2. Publix API Migration | 15 | — | 15 |
+| 2. Publix API Migration | 17 | — | 17 |
 | 3. Publix Relay Migration | 7 | — | 7 |
 | 4. Observability | 5 | 14 | 19 |
 | 5. RCA Tasks | 12 | — | 12 |
 | 6. AI Project | 6 | 4 | 10 |
-| **Total** | **77 + 2pt/wk** | **20** | **97** |
+| **Total** | **79 + 2pt/wk** | **20** | **99** |
 
-> **77 active points = ~38.5 work days = ~7.7 weeks** (not counting Future items, oncall, interruptions, or weekly FPS coordination)
+> **79 active points = ~39.5 work days = ~7.9 weeks** (not counting Future items, oncall, interruptions, or weekly FPS coordination)
 
 ---
 
@@ -97,5 +99,5 @@
 - FPS coding estimated complete ~**April 4**, 3P Delivery coding ~**April 10** (at 1.37x velocity)
 - DORCH says 3P Delivery APIs target **Apr 27**
 - FORT Gantt shows project slipped **1.5 weeks** due to RCA workload + AI focus days
-- Unavailable **2 weeks starting April 24**
+- Unavailable **2 weeks starting April 25**
 - Everyone unavailable **~1 week/month** for oncall rotation
