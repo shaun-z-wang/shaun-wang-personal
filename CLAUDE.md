@@ -9,7 +9,7 @@ Additional statuses:
 - **Not assigned** — task exists but no owner yet
 - **HIGH PRIORITY / {status}** — prefix for urgent items
 - **Future** — nice-to-have, not currently planned
-- **{Date} / {status}** — when a specific target date applies (e.g. "Tomorrow / Rolling out", "April 6 / Rolling out")
+- **{Date} / {status}** — when a specific target date applies. Always use exact dates (e.g. "Mar 21 / Rolling out"), never relative dates like "tomorrow" or "next week"
 
 ### Bullet Format
 - My tasks: `- **Status** — Description (TICKET-ID)`

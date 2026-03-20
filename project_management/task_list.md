@@ -1,4 +1,4 @@
-# Complete Task & Project Inventory (2026-03-19)
+  # Complete Task & Project Inventory (2026-03-19)
 
 ## 1. 3P Delivery Project (MVP)
 
@@ -38,8 +38,8 @@
 - **Review** — Verify rollout dashboard is working, figure out missing validate_order and get_availability metrics
 - **HIGH PRIORITY / Development** — RCA: port to format, present, address action items (FUL-184648)
 - **Not started** — Test order invalid fix in dev (after RCA)
-- **Tomorrow / Rolling out** — Roll out to 1 location, monitor errors
-- **April 6 / Rolling out** — Roll out to 10 locations
+- **Mar 21 / Rolling out** — Roll out to 1 location, monitor errors
+- **Apr 6 / Rolling out** — Roll out to 10 locations
 
 ---
 
@@ -72,8 +72,8 @@
 
 ## 6. AI Project
 
-- **Tomorrow** — Review AI Readiness for Connect Fulfillment [doc](https://docs.google.com/document/d/1eY72GPvFxXGMxCh2Abt4MAnP1nPRxdQVmzdy99Eey_A/edit), check if Relay has any items (due Friday for pillar review)
-- **Next Mon & Tue** — Dedicate 2 full days to team-decided AI work
+- **Mar 21** — Review AI Readiness for Connect Fulfillment [doc](https://docs.google.com/document/d/1eY72GPvFxXGMxCh2Abt4MAnP1nPRxdQVmzdy99Eey_A/edit), check if Relay has any items (due Mar 21 for pillar review)
+- **Mar 23–24** — Dedicate 2 full days to team-decided AI work
 - **Not started** — Publish Tmax window update icon hook plugin
 - **Future** — Look into Graham's Claude Cowork incident notification plugin
 - **Future** — Look into Nathan's oncall-bot for auto-investigating alerts
