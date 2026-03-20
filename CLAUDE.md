@@ -1,3 +1,7 @@
+# Git Rules
+
+- Do NOT commit or push unless I give explicit permission. Always show what you plan to commit and wait for approval.
+
 # Project Management Rules
 
 ## Task List Formatting (`project_management/task_list.md`)
