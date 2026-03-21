@@ -26,3 +26,14 @@ Additional statuses:
 - Within a project, split into subsections by component or ownership (e.g. "My Tasks" vs "Others' Tasks")
 - Include a `## Timeline Context` section at the bottom with key dates, velocity estimates, and availability constraints
 - Order tasks roughly by priority within each section
+
+## Daily Done Formatting (`project_management/daily-done.md`)
+
+- Each day gets a `## YYYY-MM-DD` header
+- Group items into three sections:
+  - `### Meetings` — meetings attended
+  - `### Async Discussion` — Slack threads, PR reviews, doc reviews, email
+  - `### Individual Work` — coding, research, tooling, planning
+- Use checkboxes: `- [x]` for done, `- [ ]` for in progress
+- Include PR numbers, ticket IDs, and Slack links where available
+- Most recent day at the top
