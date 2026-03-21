@@ -9,7 +9,7 @@
 ### Async Discussion
 - [x] Merged PR #751947 — rollout group tracking
 - [x] Addressed code review on PR #752862
-- [x] [Slack discussion](https://instacart.slack.com/archives/C09P04YC06P/p1774047722420999)
+- [x] [Slack discussion](https://instacart.slack.com/archives/C09P04YC06P/p1774047722420999) — FPS architecture: where business logic should live, differentiating API layer vs service
 - [ ] Order weight requirements research for `submit_delivery_batch`
 
 ### Individual Work
