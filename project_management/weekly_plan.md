@@ -16,21 +16,6 @@
 | **May 25–29** | — | — | Monitor 2pt | DDC runbooks 2pt | Rollout monitoring 5pt | — | 9pt | FPS 1pt |
 | **Jun 1–5** | — | — | — | — | — | Tmax 1pt | 1pt | FPS 1pt |
 
-## Running Totals by Week
-
-| Week | 3P/FPS | Publix API | Relay | RCA | Obs | AI | Task Total | Coord Total |
-|---|---|---|---|---|---|---|---|---|
-| Mar 23 | 0 | 2 | 0 | 6 | 0 | 5 | 13 | 1 |
-| Mar 30 | 2 | 6 | 0 | 10 | 0 | 5 | 23 | 2 |
-| Apr 6 | 10 | 8 | 0 | 10 | 0 | 5 | 33 | 3 |
-| Apr 13 | 10 | 8 | 0 | 10 | 0 | 5 | 33 | 3 |
-| Apr 20 | 20 | 8 | 0 | 10 | 0 | 5 | 43 | 4 |
-| *Leave* | — | — | — | — | — | — | — | — |
-| May 11 | 28 | 10 | 0 | 10 | 0 | 5 | 53 | 5 |
-| May 18 | 32 | 10 | 5 | 10 | 0 | 5 | 62 | 6 |
-| May 25 | 32 | 10 | 7 | 12 | 5 | 5 | 71 | 7 |
-| Jun 1 | 32 | 10 | 7 | 12 | 5 | 6 | 72 | 8 |
-
 > **All RCA tasks (12pt) done by end of Apr 6** — frontloaded before project work
 >
 > **Dev work prioritized**: Webhooks → Cancel Delivery → Get Delivery before leave. Reconciliation, debt, and docs pushed after leave.
