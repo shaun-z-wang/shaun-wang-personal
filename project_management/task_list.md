@@ -1,4 +1,4 @@
-# Complete Task & Project Inventory (2026-03-19)
+# Complete Task & Project Inventory (2026-03-20)
 
 > **Points**: 1 point = half day of work
 
@@ -27,11 +27,9 @@
 
 ## 2. Publix API Migration
 
-- **Review** — Rollout group tracking PR (#751947) `1pt`
 - **Review** — Verify rollout dashboard is working, figure out missing validate_order and get_availability metrics `1pt`
 - **HIGH PRIORITY / Development** — RCA: port to format, present, address action items (FUL-184648) `6pt`
 - **Not started** — Test order invalid fix in dev (after RCA) `3pt`
-- **Mar 21 / Rolling out** — Roll out to 1 location, monitor errors `1pt`
 - **Apr 6 / Rolling out** — Roll out to 10 locations `2pt`
 - **Not started** — Roll out to 10% of locations `2pt`
 
@@ -52,7 +50,7 @@
 - **Future** — Add instrumentation wrapper to all Relay APIs `10pt`
 - **Future** — Check on relay observability task force to see what's on there
 - **Future** — Figure out order impact per endpoint `4pt`
-- **Future** — Make empty order_items / won't build order cake product a known error
+- **Review** — Make empty order_items / won't build order cake product a known error (PR #754596)
 
 ---
 
@@ -68,29 +66,10 @@
 
 ## 6. AI Project
 
-- **Mar 21** — Review AI Readiness for Connect Fulfillment [doc](https://docs.google.com/document/d/1eY72GPvFxXGMxCh2Abt4MAnP1nPRxdQVmzdy99Eey_A/edit), check if Relay has any items (due Mar 21 for pillar review) `1pt`
 - **Mar 23–24** — Dedicate 2 full days to team-decided AI work `4pt`
 - **Not started** — Publish Tmax window update icon hook plugin `1pt`
 - **Future** — Look into Graham's Claude Cowork incident notification plugin `2pt`
 - **Future** — Look into Nathan's oncall-bot for auto-investigating alerts `2pt`
-
----
-
-## Point Totals
-
-| Section | Active | Future | Total |
-|---|---|---|---|
-| 1. FPS — My Tasks | 2 + 2pt/wk | 2 | 4 + 2pt/wk |
-| 1. 3P Delivery MVP — My Tasks | 27 | — | 27 |
-| 1. Testing | 3 | — | 3 |
-| 2. Publix API Migration | 17 | — | 17 |
-| 3. Publix Relay Migration | 7 | — | 7 |
-| 4. Observability | 5 | 14 | 19 |
-| 5. RCA Tasks | 12 | — | 12 |
-| 6. AI Project | 6 | 4 | 10 |
-| **Total** | **79 + 2pt/wk** | **20** | **99** |
-
-> **79 active points = ~39.5 work days = ~7.9 weeks** (not counting Future items, oncall, interruptions, or weekly FPS coordination)
 
 ---
 

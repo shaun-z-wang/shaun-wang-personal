@@ -1,11 +1,10 @@
-# Weekly Plan (2026-03-19)
+# Weekly Plan (2026-03-20)
 
 > **Capacity**: 10pt/week for tasks (1pt = half day) | Coordination tracked separately
 > **Strategy**: Frontload all RCA tasks, then prioritize dev work (webhooks, Cancel Delivery, Get Delivery). Oncall weeks = 0pt.
 
 | Week | 3P Delivery / FPS | Publix API | Publix Relay | RCA | Observability | AI | Total | Coordination |
 |---|---|---|---|---|---|---|---|---|
-| **Mar 20 (Fri)** | — | PR review 1pt, rollout 1 loc 1pt | — | — | — | AI readiness 1pt | 3pt | — |
 | **Mar 23–27** | — | — | — | Publix RCA 4pt, submission failures 2pt | — | AI days 4pt | 10pt | FPS 1pt |
 | **Mar 30 – Apr 3** | AcknowledgeDelivery 2pt | Dashboard 1pt, test order fix 3pt | — | Publix RCA 2pt, order volume 1pt, GetIntEnabled 1pt | — | — | 10pt | FPS 1pt |
 | **Apr 6–10** | Webhooks 8pt | Rollout 10 locs 2pt | — | — | — | — | 10pt | FPS 1pt |
@@ -21,7 +20,6 @@
 
 | Week | 3P/FPS | Publix API | Relay | RCA | Obs | AI | Task Total | Coord Total |
 |---|---|---|---|---|---|---|---|---|
-| Mar 20 | 0 | 2 | 0 | 0 | 0 | 1 | 3 | 0 |
 | Mar 23 | 0 | 2 | 0 | 6 | 0 | 5 | 13 | 1 |
 | Mar 30 | 2 | 6 | 0 | 10 | 0 | 5 | 23 | 2 |
 | Apr 6 | 10 | 8 | 0 | 10 | 0 | 5 | 33 | 3 |
