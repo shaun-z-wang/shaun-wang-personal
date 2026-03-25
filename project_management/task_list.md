@@ -72,6 +72,9 @@
 - **Future** — Look into Graham's Claude Cowork incident notification plugin `2pt`
 - **Future** — Look into Nathan's oncall-bot for auto-investigating alerts `2pt`
 
+## 7. Others
+- **In progress** - Computer only has 30GB left, need to clean or up size. Possibly do it after the break
+
 ---
 
 ## Timeline Context
