@@ -21,6 +21,7 @@
 
 ### Testing
 - **Not started** — Review Mark's E2E testing decision (option 3: split admin providers), understand implications for FPS testing `1pt`
+- **Not started** - Use testing center to mock outbound and inbound calls + roulette `6pt`
 - **Scoping** — As a team, decide on e2e test steps (FORT Test Tracker doc) `2pt`
 
 ---
