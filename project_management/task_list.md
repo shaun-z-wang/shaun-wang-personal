@@ -48,6 +48,9 @@
 ## 4. Observability Improvements (cross-project)
 
 - **Not started** — Improved rollout monitoring (design dashboard, review applicability to all relay projects, update dashboards) `5pt`
+- **Not started** - Write a doc on a Relay Orders Admin Tool
+- **Future** - Improve known classifer implementation
+- **Future** - Make sure Publix build item error surface the detail on API level
 - **Future** — Add instrumentation wrapper to all Relay APIs `10pt`
 - **Future** — Check on relay observability task force to see what's on there
 - **Future** — Figure out order impact per endpoint `4pt`
