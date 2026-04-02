@@ -1,0 +1,146 @@
+{
+  "env": {
+    "CLAUDE_CODE_USE_BEDROCK": "1",
+    "CLAUDE_CODE_SKIP_BEDROCK_AUTH": "1",
+    "ANTHROPIC_BEDROCK_BASE_URL": "https://aigateway.instacart.tools/proxy/claude-code/bedrock/tag/local-claude/user/shaun.wang@instacart.com",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "OTEL_LOGS_EXPORTER": "otlp",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://otlp.proxy.datadog.internal.pika.ac:4317",
+    "OTEL_RESOURCE_ATTRIBUTES": "service.name=claude-code-cli,user.email=shaun.wang@instacart.com",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "us.anthropic.claude-opus-4-6-v1",
+    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
+    "OTEL_LOG_TOOL_DETAILS": "1",
+    "OTEL_METRICS_INCLUDE_VERSION": "true",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "us.anthropic.claude-sonnet-4-6",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "DISABLE_AUTOUPDATER": "1",
+    "ENABLE_TOOL_SEARCH": "true"
+  },
+  "permissions": {
+    "allow": [
+      "Bash",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep",
+      "Task",
+      "TodoWrite",
+      "WebFetch",
+      "WebSearch",
+      "NotebookEdit",
+      "NotebookRead",
+      "AskUserQuestion",
+      "Skill",
+      "SlashCommand",
+      "BashOutput",
+      "KillShell",
+      "Bash(curl:*)",
+      "mcp__buildkite__*",
+      "mcp__glean_default__*",
+      "mcp__glean__*",
+      "mcp__playwright__*",
+      "mcp__chrome-devtools__*",
+      "mcp__datadog-via-cookbook__*",
+      "mcp__log-nexus-wittycart__*",
+      "mcp__clockwise__*",
+      "mcp__blazer__*",
+      "mcp__atlassian__*",
+      "mcp__slack__slack_search_public_and_private",
+      "mcp__slack__slack_read_channel",
+      "mcp__slack__slack_read_thread",
+      "mcp__google-docs__searchDocuments",
+      "mcp__google-docs__readDocument",
+      "mcp__datadog__search_datadog_metrics",
+      "mcp__datadog__get_datadog_metric",
+      "mcp__notion__notion-search",
+      "mcp__notion__notion-fetch",
+      "mcp__notion__notion-create-pages",
+      "mcp__notion__notion-update-page",
+      "mcp__roulette__get_feature_by_name"
+    ],
+    "deny": [
+      "Bash(sudo *)",
+      "Bash(mkfs *)",
+      "Bash(dd *)",
+      "Edit(~/.ssh/**)",
+      "Read(**/.env*)",
+      "Read(**/*.pem)",
+      "Read(**/*.key)",
+      "Read(**/secrets/**)",
+      "Read(**/credentials/**)",
+      "Read(~/.isc/**)",
+      "Read(~/.bento/**)",
+      "Read(~/.ssh/**)",
+      "Read(~/.gnupg/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.azure/**)",
+      "Read(~/.config/gh/**)",
+      "Read(~/.git-credentials)",
+      "Read(~/.docker/config.json)",
+      "Read(~/.kube/**)",
+      "Read(~/.npmrc)",
+      "Read(~/.npm/**)",
+      "Read(~/.pypirc)",
+      "Read(~/.gem/credentials)",
+      "Read(~/Library/Keychains/**)"
+    ],
+    "ask": [
+      "Bash(rm:*)",
+      "Bash(isc:*)",
+      "Edit(~/.bashrc)",
+      "Edit(~/.zshrc)"
+    ],
+    "additionalDirectories": [
+      "/home/bento/.config/claude-code/skills"
+    ]
+  },
+  "model": "us.anthropic.claude-opus-4-6-v1",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/bento/.claude/hooks/fix-ssh-auth-sock.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/bento/.claude/hooks/fix-ssh-auth-sock.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "annual-reviews@instacart": true,
+    "datadog@instacart": true,
+    "doc-review@instacart": true,
+    "doc-writer@instacart": true,
+    "google-docs@instacart": false,
+    "slack@instacart": false,
+    "rca-collaborator@instacart": true,
+    "code-chef@instacart": true,
+    "graft@instacart": true,
+    "tmux-status@instacart": true
+  },
+  "extraKnownMarketplaces": {
+    "instacart": {
+      "source": {
+        "source": "github",
+        "repo": "instacart/claude-marketplace"
+      }
+    }
+  }
+}
