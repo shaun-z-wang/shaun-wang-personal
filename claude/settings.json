@@ -120,6 +120,15 @@
             "command": "/home/bento/.claude/hooks/fix-ssh-auth-sock.sh"
           }
         ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | { read -r FILE; if [[ \"$FILE\" == /home/bento/carrot/* ]] && cd /home/bento/carrot && [ \"$(git branch --show-current)\" = \"master\" ]; then echo '{\"decision\":\"block\",\"reason\":\"You are on master in carrot. Run graft to create a worktree first.\"}'; fi; }"
+          }
+        ]
       }
     ]
   },
