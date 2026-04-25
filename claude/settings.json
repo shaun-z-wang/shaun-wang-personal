@@ -1,24 +1,26 @@
 {
   "env": {
-    "CLAUDE_CODE_USE_BEDROCK": "1",
-    "CLAUDE_CODE_SKIP_BEDROCK_AUTH": "1",
-    "ANTHROPIC_BEDROCK_BASE_URL": "https://aigateway.instacart.tools/proxy/claude-code/bedrock/tag/local-claude/user/shaun.wang@instacart.com",
     "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
     "OTEL_METRICS_EXPORTER": "otlp",
     "OTEL_LOGS_EXPORTER": "otlp",
     "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
     "OTEL_EXPORTER_OTLP_ENDPOINT": "http://otlp.proxy.datadog.internal.pika.ac:4317",
-    "OTEL_RESOURCE_ATTRIBUTES": "service.name=claude-code-cli,user.email=shaun.wang@instacart.com",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "us.anthropic.claude-opus-4-6-v1",
+    "OTEL_RESOURCE_ATTRIBUTES": "service.name=claude-code-cli,user.email=shaun.wang@instacart.com,provider=vertex",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
     "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
     "OTEL_LOG_TOOL_DETAILS": "1",
     "OTEL_METRICS_INCLUDE_VERSION": "true",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "us.anthropic.claude-sonnet-4-6",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "us.anthropic.claude-haiku-4-5-20251001-v1:0",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
     "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "DISABLE_AUTOUPDATER": "1",
-    "ENABLE_TOOL_SEARCH": "true"
+    "ENABLE_TOOL_SEARCH": "true",
+    "CLAUDE_CODE_USE_VERTEX": "1",
+    "CLAUDE_CODE_SKIP_VERTEX_AUTH": "1",
+    "CLOUD_ML_REGION": "global",
+    "ANTHROPIC_VERTEX_PROJECT_ID": "generative-ai-instacart",
+    "ANTHROPIC_VERTEX_BASE_URL": "https://aigateway.instacart.tools/proxy/claude-code/vertex/tag/local-claude/user/shaun.wang%40instacart.com/v1"
   },
   "permissions": {
     "allow": [
@@ -99,7 +101,7 @@
       "/home/bento/.config/claude-code/skills"
     ]
   },
-  "model": "us.anthropic.claude-opus-4-6-v1",
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -132,6 +134,10 @@
       }
     ]
   },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline-command.sh"
+  },
   "enabledPlugins": {
     "annual-reviews@instacart": true,
     "datadog@instacart": true,
@@ -142,7 +148,9 @@
     "rca-collaborator@instacart": true,
     "code-chef@instacart": true,
     "graft@instacart": true,
-    "tmux-status@instacart": true
+    "tmux-status@instacart": true,
+    "thyme@instacart": true,
+    "gws@instacart": true
   },
   "extraKnownMarketplaces": {
     "instacart": {
@@ -151,5 +159,8 @@
         "repo": "instacart/claude-marketplace"
       }
     }
-  }
+  },
+  "effortLevel": "high",
+  "showClearContextOnPlanAccept": true,
+  "theme": "light"
 }
