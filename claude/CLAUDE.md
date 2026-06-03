@@ -11,10 +11,11 @@ graft new <branch-name> <project-path> --edit --sparse
 - Do NOT use `git checkout -b` or `git branch`. Graft creates an isolated worktree and opens a new editor window.
 - `--from origin/master` is the default. Use `--from <branch>` to base off a different branch.
 - If you need additional directories mid-task, run `graft add-dir /<path>` to expand the sparse checkout.
+- If the build breaks after pulling latest from master in a worktree (likely missing sparse dependencies), try `graft refresh` first before reaching for `graft add-dir`. Refresh re-resolves the sparse cone and usually fixes it.
 - To clean up merged worktrees: `graft sync`.
 - To remove a specific worktree: `graft rm <branch-name>`.
 
-**TESTING MODE**: Always ask for confirmation before running any graft command. Show the exact command you plan to run and wait for approval.
+**Confirmation rule**: Run graft commands freely without asking. The inverse applies: if you are about to make code changes and you are NOT in a graft worktree (cwd not under `.claude/worktrees/`), stop and ask for confirmation before editing. Show what you intend to change and wait for approval (or for the user to tell you to graft first).
 
 # Plan implementation workflow
 
@@ -27,6 +28,10 @@ When implementing changes from a plan, always create a graft worktree first befo
 # File path references
 
 When referencing files, always use the full absolute path starting from `/home/bento/...` (e.g. `/home/bento/carrot/src/foo/bar.rb:42`) so it can be easily looked up in Cursor.
+
+# Ask, don't assume
+
+When something in a request is ambiguous, underspecified, or could reasonably be interpreted multiple ways, ask me for clarification before proceeding. Do not guess at intent, invent missing details, or pick a direction silently. A short clarifying question is always preferable to going down the wrong path.
 
 # Shell functions
 
