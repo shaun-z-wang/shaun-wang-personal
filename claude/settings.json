@@ -1,26 +1,33 @@
 {
   "env": {
-    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
-    "OTEL_METRICS_EXPORTER": "otlp",
-    "OTEL_LOGS_EXPORTER": "otlp",
-    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
-    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://otlp.proxy.datadog.internal.pika.ac:4317",
-    "OTEL_RESOURCE_ATTRIBUTES": "service.name=claude-code-cli,user.email=shaun.wang@instacart.com,provider=vertex",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
-    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
-    "OTEL_LOG_TOOL_DETAILS": "1",
-    "OTEL_METRICS_INCLUDE_VERSION": "true",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
-    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
-    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "DISABLE_AUTOUPDATER": "1",
-    "ENABLE_TOOL_SEARCH": "true",
-    "CLAUDE_CODE_USE_VERTEX": "1",
-    "CLAUDE_CODE_SKIP_VERTEX_AUTH": "1",
+    "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "0",
     "CLOUD_ML_REGION": "global",
+    "ENABLE_TOOL_SEARCH": "true",
+    "OTEL_LOGS_EXPORTER": "otlp",
+    "DISABLE_AUTOUPDATER": "1",
+    "OTEL_LOG_TOOL_DETAILS": "1",
+    "OTEL_METRICS_EXPORTER": "otlp",
+    "CLAUDE_CODE_USE_VERTEX": "1",
+    "CLAUDE_CODE_USE_BEDROCK": "0",
+    "ANTHROPIC_VERTEX_BASE_URL": "https://aigateway.instacart.tools/proxy/claude-code/vertex/v1",
     "ANTHROPIC_VERTEX_PROJECT_ID": "generative-ai-instacart",
-    "ANTHROPIC_VERTEX_BASE_URL": "https://aigateway.instacart.tools/proxy/claude-code/vertex/tag/local-claude/user/shaun.wang%40instacart.com/v1"
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://otlp.proxy.datadog.internal.pika.ac:4317",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "CLAUDE_CODE_SKIP_VERTEX_AUTH": "1",
+    "OTEL_METRICS_INCLUDE_VERSION": "true",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
+    "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
+    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
+    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": 200000,
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "OTEL_RESOURCE_ATTRIBUTES": "service.name=claude-code-cli,user.email=shaun.wang@instacart.com,provider=vertex",
+    "ANTHROPIC_CUSTOM_HEADERS": "x-aigateway-user: shaun.wang@instacart.com"
+  },
+  "attribution": {
+    "commit": "🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
   },
   "permissions": {
     "allow": [
@@ -131,6 +138,47 @@
             "command": "jq -r '.tool_input.file_path // empty' | { read -r FILE; if [[ \"$FILE\" == /home/bento/carrot/* ]] && cd /home/bento/carrot && [ \"$(git branch --show-current)\" = \"master\" ]; then echo '{\"decision\":\"block\",\"reason\":\"You are on master in carrot. Run graft to create a worktree first.\"}'; fi; }"
           }
         ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/bento/.claude/plugins/marketplaces/instacart/code-chef/hooks/scripts/pre-bash-guard.sh",
+            "timeout": 10,
+            "statusMessage": "Checking guardrails..."
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/bento/.claude/plugins/marketplaces/instacart/code-chef/hooks/scripts/code-chef-enforcer.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/bento/.claude/plugins/marketplaces/instacart/code-chef/hooks/scripts/session-autosave.sh",
+            "timeout": 10,
+            "async": true
+          },
+          {
+            "type": "command",
+            "command": "/home/bento/.claude/plugins/marketplaces/instacart/code-chef/hooks/scripts/layer-notify.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
       }
     ]
   },
@@ -150,7 +198,9 @@
     "graft@instacart": true,
     "tmux-status@instacart": true,
     "thyme@instacart": true,
-    "gws@instacart": true
+    "gws@instacart": true,
+    "pastry@instacart": true,
+    "enterprise-platform-monitor-review@instacart": true
   },
   "extraKnownMarketplaces": {
     "instacart": {
@@ -162,5 +212,10 @@
   },
   "effortLevel": "high",
   "showClearContextOnPlanAccept": true,
-  "theme": "light"
+  "theme": "light",
+  "availableModels": [
+    "opus",
+    "sonnet",
+    "haiku"
+  ]
 }

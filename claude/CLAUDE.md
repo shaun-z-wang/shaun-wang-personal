@@ -25,6 +25,10 @@ When implementing changes from a plan, always create a graft worktree first befo
 2. Apply all changes in the worktree
 3. Commit and create the PR from the worktree
 
+# Keep PR description in sync
+
+Every time you push a change to a PR, review the PR description and update it if it no longer accurately reflects the code being shipped. Do not leave the description stale after adding, removing, or altering commits.
+
 # File path references
 
 When referencing files, always use the full absolute path starting from `/home/bento/...` (e.g. `/home/bento/carrot/src/foo/bar.rb:42`) so it can be easily looked up in Cursor.
@@ -32,6 +36,20 @@ When referencing files, always use the full absolute path starting from `/home/b
 # Ask, don't assume
 
 When something in a request is ambiguous, underspecified, or could reasonably be interpreted multiple ways, ask me for clarification before proceeding. Do not guess at intent, invent missing details, or pick a direction silently. A short clarifying question is always preferable to going down the wrong path.
+
+# 5 whys
+
+When investigating (e.g. a bug) or critically evaluating (e.g. a plan or code), apply the 5 whys to reach the root cause rather than stopping at the first plausible explanation.
+
+# Comments
+
+Err on the side of generating fewer comments. Prefer no comment over a verbose one, and no comment at all when the meaning is inferable from the code itself.
+
+- Do not write comments that restate what well-named identifiers already say.
+- Do not narrate the change, the task, the caller, or the history ("added for X", "used by Y", "was previously Z").
+- Only add a comment when the *why* is non-obvious: a hidden constraint, a subtle invariant, a workaround for a specific bug, or logic that would genuinely surprise a reader.
+- If a method is hard to understand, a short comment explaining the intent is fine — but prefer clarifying the code first (rename, split, restructure) over explaining it in prose.
+- Keep any comment you do write to the minimum length needed. One short line beats a paragraph.
 
 # Shell functions
 
