@@ -1,6 +1,6 @@
 ---
 name: daily-standup
-description: Produce a short bullet-point daily standup by pulling PR updates (PT-aligned), Slack activity (PT-aligned), calendar meetings, and AI chat activity for a given day. Use when the user asks for "standup", "daily standup", "what did I do yesterday", or /daily-standup.
+description: Produce a short bullet-point daily standup by fanning out 4 subagents (PR updates PT-aligned, Slack activity PT-aligned, calendar meetings, AI chat activity). Defaults to the previous workday (Mon → last Fri). Use when the user asks for "standup", "daily standup", "what did I do yesterday", or /daily-standup.
 ---
 
 # Daily Standup
@@ -9,7 +9,9 @@ Produce a concise, bullet-point standup summary for a single day, suitable to pa
 
 ## Step 1: Determine the day
 
-If the user names a day ("yesterday", "Monday", "Friday", "2026-07-21"), convert to a concrete PT calendar date based on today. If ambiguous, ask.
+**Default: the previous workday.** If today is Mon–Fri, previous workday = yesterday (Sun/holidays skipped: if yesterday is Sun, use Fri; if Sat, use Fri). If today is Sat/Sun, previous workday = last Fri. Do NOT ask — just pick it.
+
+Only ask the user when they name something ambiguous ("last week"). If they name a specific day ("Monday", "Friday", "2026-07-21", "yesterday"), use that.
 
 Compute the PT day window as UTC bounds — during PDT (Mar–Nov), PT is UTC-7:
 - `START_UTC` = `<DATE>T07:00:00Z`
@@ -17,9 +19,9 @@ Compute the PT day window as UTC bounds — during PDT (Mar–Nov), PT is UTC-7:
 
 During PST (Nov–Mar), use `08:00:00Z` instead. Check `TZ=America/Los_Angeles date` if unsure which is in effect.
 
-## Step 2: Gather context (4 parallel agents)
+## Step 2: Gather context (4 parallel subagents)
 
-Spawn all four in one message with `run_in_background: false` so they run concurrently.
+**Always fan out — never gather any of these sources yourself in the main context.** Spawn all four in one message with `run_in_background: false` so they run concurrently. This keeps the main context clean and lets the four sources search in parallel.
 
 ### Agent 1: GitHub PRs (general-purpose, name: `pr-searcher`)
 
