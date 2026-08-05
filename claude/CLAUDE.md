@@ -29,6 +29,10 @@ When implementing changes from a plan, always create a graft worktree first befo
 
 Every time you push a change to a PR, review the PR description and update it if it no longer accurately reflects the code being shipped. Do not leave the description stale after adding, removing, or altering commits.
 
+# Always name spawned agents
+
+Whenever you spawn an agent, ALWAYS give it a name (via the `name` parameter) so it can be addressed later with SendMessage if needed.
+
 # File path references
 
 When referencing files, always use the full absolute path starting from `/home/bento/...` (e.g. `/home/bento/carrot/src/foo/bar.rb:42`) so it can be easily looked up in Cursor.
