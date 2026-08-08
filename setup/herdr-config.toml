@@ -12,10 +12,9 @@
 onboarding = false
 
 [theme]
-# tmux status bar was plain gray (fg=white, bg=colour240). "terminal"
-# inherits the outer terminal's ANSI colors — closest minimal match.
-# Use "catppuccin" for herdr's default look instead.
-name = "terminal"
+# tmux status bar was plain gray (fg=white, bg=colour240). Using
+# catppuccin-latte (light) now; green accent below still applies on top.
+name = "catppuccin-latte"
 
 # Green accent for the active tab / highlights / borders. herdr has no
 # tab-only color token, so accent is the lever (it also tints borders and
