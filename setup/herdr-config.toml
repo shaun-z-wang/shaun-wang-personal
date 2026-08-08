@@ -17,6 +17,12 @@ onboarding = false
 # Use "catppuccin" for herdr's default look instead.
 name = "terminal"
 
+# Green accent for the active tab / highlights / borders. herdr has no
+# tab-only color token, so accent is the lever (it also tints borders and
+# navigation UI). Tweak the hex to taste, or delete this block to revert.
+[theme.custom]
+accent = "#56d364"
+
 [ui]
 agent_panel_sort = "priority"
 # tmux `n` creates a new window immediately, without a name prompt.
