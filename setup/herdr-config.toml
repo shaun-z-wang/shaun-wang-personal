@@ -51,12 +51,17 @@ detach = "prefix+d"
 split_horizontal = "prefix+h"
 # tmux `v` = split-window -h (side-by-side, vertical divider) — herdr default.
 split_vertical = "prefix+v"
-# tmux defines no h/j/k/l pane-focus; it relies on prefix+arrows (tmux
-# default select-pane). Free up `h` for the split above and mirror that.
+# Pane focus left/right via prefix+arrows (tmux default select-pane).
+# Up/down arrows are repurposed for workspace switching (see below).
 focus_pane_left = "prefix+left"
-focus_pane_down = "prefix+down"
-focus_pane_up = "prefix+up"
 focus_pane_right = "prefix+right"
+focus_pane_down = ""
+focus_pane_up = ""
+
+# --- workspaces ---
+# prefix+up / prefix+down cycle to the previous / next workspace.
+previous_workspace = "prefix+up"
+next_workspace = "prefix+down"
 
 # --- conflict cleanups ---
 # Default prefix+r clashes with rename_tab; tmux resizes via resize-pane
