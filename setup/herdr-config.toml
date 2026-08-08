@@ -1,0 +1,64 @@
+# herdr config — mirrored from ~/.tmux.conf
+# Only non-default values are set. herdr defaults already match the rest of
+# the tmux config: mouse on, vi-style navigate mode (h/j/k/l), 1-based tab
+# index, copy-on-select (= OSC52 clipboard), new panes follow current cwd,
+# and $SHELL as the default shell. herdr's scrollback default (10 MB) is
+# more generous than tmux's history-limit 50000, so it is left as-is.
+#
+# Not mirrored (no herdr equivalent):
+#   prefix+a / prefix+A — tmux move-window to/from an "archive" session.
+#   tmux status-bar gray colors — approximated by theme = "terminal".
+
+onboarding = false
+
+[theme]
+# tmux status bar was plain gray (fg=white, bg=colour240). "terminal"
+# inherits the outer terminal's ANSI colors — closest minimal match.
+# Use "catppuccin" for herdr's default look instead.
+name = "terminal"
+
+[ui]
+agent_panel_sort = "priority"
+# tmux `n` creates a new window immediately, without a name prompt.
+prompt_new_tab_name = false
+
+[keys]
+# Prefix: tmux remapped Ctrl+b → Ctrl+a.
+prefix = "ctrl+a"
+
+# --- tabs (tmux "windows") ---
+# tmux remapped `c` from new-window to source-file (reload).
+reload_config = "prefix+c"
+# tmux `n` = new-window.
+new_tab = "prefix+n"
+# tmux `r` = rename-window.
+rename_tab = "prefix+r"
+# tmux `-` = previous-window, `=` = next-window.
+previous_tab = "prefix+minus"
+next_tab = "prefix+plus"
+# tmux `w` = kill-window.
+close_tab = "prefix+w"
+# tmux default `d` = detach-client.
+detach = "prefix+d"
+
+# --- panes ---
+# tmux `h` = split-window -c (top/bottom panes, horizontal divider).
+split_horizontal = "prefix+h"
+# tmux `v` = split-window -h (side-by-side, vertical divider) — herdr default.
+split_vertical = "prefix+v"
+# tmux defines no h/j/k/l pane-focus; it relies on prefix+arrows (tmux
+# default select-pane). Free up `h` for the split above and mirror that.
+focus_pane_left = "prefix+left"
+focus_pane_down = "prefix+down"
+focus_pane_up = "prefix+up"
+focus_pane_right = "prefix+right"
+
+# --- conflict cleanups ---
+# Default prefix+r clashes with rename_tab; tmux resizes via resize-pane
+# commands, not a mode, so unset.
+resize_mode = ""
+# Default prefix+w clashes with close_tab; tmux has no workspace picker.
+workspace_picker = ""
+
+# Left at herdr defaults (already match tmux defaults):
+#   zoom = "prefix+z", close_pane = "prefix+x"
