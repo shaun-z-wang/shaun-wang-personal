@@ -37,6 +37,10 @@ Whenever you spawn an agent, ALWAYS give it a name (via the `name` parameter) so
 
 When referencing files, always use the full absolute path starting from `/home/bento/...` (e.g. `/home/bento/carrot/src/foo/bar.rb:42`) so it can be easily looked up in Cursor.
 
+# Column & metadata verification (MANDATORY)
+
+Every time you modify an existing SQL query or write a new one, you MUST first use the Portal MCP (`portal-mcp-v2`, e.g. `describe_table`) to verify the columns available on each referenced table and read their annotations/descriptions before proceeding with the change. Do not reference a column until its existence and meaning are confirmed via Portal MCP. This applies in the main session and all subagents.
+
 # Ask, don't assume
 
 When something in a request is ambiguous, underspecified, or could reasonably be interpreted multiple ways, ask me for clarification before proceeding. Do not guess at intent, invent missing details, or pick a direction silently. A short clarifying question is always preferable to going down the wrong path.

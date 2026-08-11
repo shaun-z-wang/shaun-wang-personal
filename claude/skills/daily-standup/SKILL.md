@@ -82,6 +82,8 @@ Include DMs — `channel_types` defaults to all, so no config needed, but do NOT
 
 For each hit, note the channel/DM and a 1-line summary. If a thread looks important, follow up with `mcp__slack__slack_read_thread`.
 
+**Capture Shaun's own `#team-relay-devs` standup post verbatim.** His standups are formatted `Yesterday: … / Today: …`. Return the **`Today:` section verbatim** (the plan he set for the target day) as a separate labeled block — the main agent surfaces it so Shaun can compare planned-vs-actual and reuse the text. If he posted no standup that day, say so.
+
 If `mcp__slack__slack_search_public_and_private` is unavailable, do NOT fall back — the Step 2 preflight should already have stopped the run. Never substitute a channel-list fetch: it misses DMs and author-scoped messages.
 
 Results may exceed the tool's token limit and get spilled to a file; paginate with the cursor and parse each page (channel + time + text) until `pagination_info` reports end of results.
@@ -118,6 +120,9 @@ Synthesize into this format — keep it tight, no filler. `<DAY>` is the `date -
 
 ```markdown
 ## Standup — <DAY> (<DATE>)
+
+**Planned (from your #team-relay-devs post)**
+- [The `Today:` section Shaun posted that day, verbatim. Omit this block if he posted no standup.]
 
 **Shipped / worked on**
 - [PRs merged, main coding work, decisions landed]

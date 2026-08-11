@@ -5,16 +5,15 @@
     "ENABLE_TOOL_SEARCH": "true",
     "OTEL_LOGS_EXPORTER": "otlp",
     "DISABLE_AUTOUPDATER": "1",
-    "OTEL_TRACES_EXPORTER": "otlp",
     "OTEL_LOG_TOOL_DETAILS": "1",
     "OTEL_METRICS_EXPORTER": "otlp",
     "CLAUDE_CODE_USE_VERTEX": "1",
     "CLAUDE_CODE_USE_BEDROCK": "0",
-    "ANTHROPIC_VERTEX_BASE_URL": "https://api-tally-infra.icprivate.com/api/proxy/claude-code/vertex/v1",
+    "ANTHROPIC_VERTEX_BASE_URL": "https://aigateway.instacart.tools/proxy/claude-code/vertex/v1",
     "ANTHROPIC_VERTEX_PROJECT_ID": "generative-ai-instacart",
     "OTEL_EXPORTER_OTLP_ENDPOINT": "http://otlp.proxy.datadog.internal.pika.ac:4317",
     "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-7",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-8",
     "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
     "CLAUDE_CODE_SKIP_VERTEX_AUTH": "1",
     "OTEL_METRICS_INCLUDE_VERSION": "true",
@@ -23,10 +22,9 @@
     "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
     "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
     "CLAUDE_CODE_AUTO_COMPACT_WINDOW": 200000,
-    "CLAUDE_CODE_ENHANCED_TELEMETRY_BETA": "1",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "ANTHROPIC_CUSTOM_HEADERS": "X-Tally-User: shaun.wang@instacart.com",
-    "OTEL_RESOURCE_ATTRIBUTES": "service.name=claude-code-cli,user.email=shaun.wang@instacart.com,provider=vertex"
+    "OTEL_RESOURCE_ATTRIBUTES": "service.name=claude-code-cli,user.email=shaun.wang@instacart.com,provider=vertex",
+    "ANTHROPIC_CUSTOM_HEADERS": "x-aigateway-user: shaun.wang@instacart.com"
   },
   "attribution": {
     "commit": "🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
@@ -106,6 +104,7 @@
       "Edit(~/.bashrc)",
       "Edit(~/.zshrc)"
     ],
+    "defaultMode": "auto",
     "additionalDirectories": [
       "/home/bento/.config/claude-code/skills"
     ]
@@ -183,6 +182,9 @@
       }
     ]
   },
+  "worktree": {
+    "baseRef": "fresh"
+  },
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
@@ -213,5 +215,13 @@
   },
   "effortLevel": "high",
   "showClearContextOnPlanAccept": true,
-  "theme": "light"
+  "askUserQuestionTimeout": "never",
+  "theme": "light",
+  "editorMode": "normal",
+  "preferredNotifChannel": "iterm2_with_bell",
+  "availableModels": [
+    "opus",
+    "sonnet",
+    "haiku"
+  ]
 }
