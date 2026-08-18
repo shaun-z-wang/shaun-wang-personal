@@ -1,0 +1,23 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    {
+      "visualIdentifier": "BAG-1-OF-2",
+      "scanIdentifier": "RP01-BARCODE-0001",
+      "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_CODE_39",
+      "locationType": "LOCATION_TYPE_SHELF",
+      "locationName": "A1",
+      "packageType": "PACKAGE_TYPE_BAG",
+      "hasAlternativeIdentifier": false
+    },
+    {
+      "visualIdentifier": "BAG-2-OF-2",
+      "scanIdentifier": "RP01-BARCODE-0002",
+      "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_QR_CODE",
+      "locationType": "LOCATION_TYPE_FREEZER",
+      "locationName": "F3",
+      "packageType": "PACKAGE_TYPE_BAG",
+      "hasAlternativeIdentifier": false
+    }
+  ]
+}

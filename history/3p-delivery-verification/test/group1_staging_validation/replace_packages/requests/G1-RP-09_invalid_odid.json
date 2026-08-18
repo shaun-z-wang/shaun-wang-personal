@@ -1,0 +1,6 @@
+{
+  "orderDeliveryId": "0",
+  "packages": [
+    { "visualIdentifier": "SHOULD-NOT-PERSIST", "scanIdentifier": "RP09-0001" }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    { "visualIdentifier": "LT-FREEZER", "scanIdentifier": "RP07-0001", "locationType": "LOCATION_TYPE_FREEZER", "locationName": "F1" },
+    { "visualIdentifier": "LT-SHELF",   "scanIdentifier": "RP07-0002", "locationType": "LOCATION_TYPE_SHELF",   "locationName": "S1" },
+    { "visualIdentifier": "LT-FRIDGE",  "scanIdentifier": "RP07-0003", "locationType": "LOCATION_TYPE_FRIDGE",  "locationName": "R1" },
+    { "visualIdentifier": "LT-HOT",     "scanIdentifier": "RP07-0004", "locationType": "LOCATION_TYPE_HOT",     "locationName": "H1" }
+  ]
+}

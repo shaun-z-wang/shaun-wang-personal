@@ -1,0 +1,1 @@
+{"orderDeliveryId": __ORDER_DELIVERY_ID__, "source": "VERIFICATION_SOURCE_FULFILLMENT_PROVIDER", "dropoffVerification": {"packages": {"details": [{"scanIdentifier": "PKG-0001", "verifiedAt": "2026-08-05T20:00:00Z"}]}, "proofOfDeliveryPhoto": {"imageUrls": ["__IMG_PNG__"]}, "idVerification": {"verified": true}, "pin": {"verified": true}, "signature": {"imageUrl": "__IMG_PNG__"}}}

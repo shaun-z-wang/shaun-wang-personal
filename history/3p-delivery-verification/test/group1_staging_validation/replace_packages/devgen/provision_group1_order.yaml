@@ -1,0 +1,33 @@
+# DevGen provisioning for Group 1 (no FPS in the loop).
+#
+# Run via the devgen-mcp-v2-staging MCP tool `run_script` (paste the YAML), OR
+# save as a recipe. Ground truth: this mirrors the FPS integration harness
+# batchPlanScript in
+#   fulfillment/fulfillment_provider_service/cmd/integration_tests/setup/setup.go
+# but STOPS AFTER generate_order so it does NOT submit a fulfillment-provider
+# batch plan (that step auto-triggers FPS SubmitBatch, which Group 1 must avoid).
+#
+# Capture `delivery_id` from the result — that is the order_delivery_id to use as
+# ORDER_DELIVERY_ID in env.sh.
+#
+# Fill the __FILL_ME__ warehouse/warehouse-location IDs with a known staging
+# delivery-capable retailer location. Discover candidates with the MCP tools
+# `search_features` / `list_commands` (query: "generate_order", "warehouse")
+# once OAuth is authorized.
+commands:
+  - name: create_user
+    output: [user_id]
+  - name: copy_warehouse_location_address
+    output: [address_id]
+    params:
+      source_warehouse_location_id: __FILL_ME_WHL_ID__
+      user_id: "$user_id"
+      delete_other_addresses: true
+  - name: generate_order
+    output: [order_id, delivery_id]
+    params:
+      warehouse_ids: [__FILL_ME_WAREHOUSE_ID__]
+      service_type: "delivery"
+      address_id: "$address_id"
+      user_id: "$user_id"
+      items_found: 10

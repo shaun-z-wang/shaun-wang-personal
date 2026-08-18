@@ -1,0 +1,9 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    { "visualIdentifier": "BUP-BAG-1", "scanIdentifier": "BUP-0001", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_CODE_39", "locationType": "LOCATION_TYPE_SHELF",   "locationName": "A1", "packageType": "PACKAGE_TYPE_BAG" },
+    { "visualIdentifier": "BUP-BAG-2", "scanIdentifier": "BUP-0002", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_QR_CODE", "locationType": "LOCATION_TYPE_FREEZER", "locationName": "F3", "packageType": "PACKAGE_TYPE_BAG" },
+    { "visualIdentifier": "BUP-BAG-3", "scanIdentifier": "BUP-0003", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_CODE_39", "locationType": "LOCATION_TYPE_FRIDGE",  "locationName": "R2", "packageType": "PACKAGE_TYPE_BAG" },
+    { "visualIdentifier": "BUP-BAG-4", "scanIdentifier": "BUP-0004", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_QR_CODE", "locationType": "LOCATION_TYPE_HOT",    "locationName": "H1", "packageType": "PACKAGE_TYPE_BAG" }
+  ]
+}

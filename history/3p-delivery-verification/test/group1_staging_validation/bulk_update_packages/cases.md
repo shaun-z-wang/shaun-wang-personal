@@ -1,0 +1,97 @@
+# Bulk Update Packages — case matrix
+
+One test case per bullet. Scroll horizontally to read the full line.
+
+Fields: **Case** (Prio) · `Request` · **Pre:** fixture · **Expected:** · **Verify:** · **Result:** · **Evidence:**
+
+
+- **G1-BUP-V01** (P0) curl:yes `BUP-V01_odid_zero.json / BulkUpdatePackages`
+  - **Pre:** seed = 4 clean bags (BUP-0001..0004)
+  - **Expected:** HTTP 400 {code:invalid_argument, msg:"order_delivery_id is required"} - handler:158; nothing touched
+  - **Verify:** BulkGetPackages: seed unchanged
+  - **Result:** PASS
+  - **Evidence:** 400 msg="order_delivery_id is required"
+- **G1-BUP-V02** (P0) curl:yes `BUP-V02_empty_packages.json`
+  - **Pre:** seed
+  - **Expected:** HTTP 400 {code:invalid_argument, msg:"packages is required"} - handler:159
+  - **Verify:** BGP: seed unchanged
+  - **Result:** PASS
+  - **Evidence:** 400 msg="packages is required"
+- **G1-BUP-V03** (P0) curl:yes `BUP-V03_missing_scan_identifier.json`
+  - **Pre:** seed
+  - **Expected:** HTTP 400 {code:invalid_argument, msg:"scan_identifier is required for every package"} - handler:160 (p.scan_identifier.blank?)
+  - **Verify:** BGP: seed unchanged
+  - **Result:** PASS
+  - **Evidence:** 400 msg="scan_identifier is required for every package"
+- **G1-BUP-V04** (P1) curl:yes `BUP-V04_blank_scan_identifier.json`
+  - **Pre:** seed
+  - **Expected:** HTTP 400 same msg as V03 - blank "" hits the same .blank? guard as missing
+  - **Verify:** BGP: after V01-V04 all 4 bags still found/verified NULL, updatedAt still seed time
+  - **Result:** PASS
+  - **Evidence:** 400; post-verify all bags clean, updatedAt=seed (23:05:45)
+- **G1-BUP-01** (P0) curl:yes `BUP-01_pickup_found_only.json`
+  - **Pre:** 0001 clean
+  - **Expected:** 200; 0001 found_at=12:00:00Z + found_via=SCAN_METHOD_SCANNER; verified_* stay null (pickup-scan semantics)
+  - **Verify:** BGP + bags table
+  - **Result:** PASS
+  - **Evidence:** 0001 foundAt 12:00 SCANNER, verified null
+- **G1-BUP-02** (P0) curl:yes `BUP-02_dropoff_verified_only.json`
+  - **Pre:** 0002 clean
+  - **Expected:** 200; 0002 verified_at=13:00:00Z + verified_via=SCANNER; found_* stay null (dropoff-scan semantics)
+  - **Verify:** BGP + bags
+  - **Result:** PASS
+  - **Evidence:** 0002 verifiedAt 13:00 SCANNER, found null
+- **G1-BUP-03** (P0) curl:yes `BUP-03_found_and_verified.json`
+  - **Pre:** 0003 clean
+  - **Expected:** 200; 0003 all four set (found 12:30 + verified 13:30, both SCANNER) in one input
+  - **Verify:** BGP + bags
+  - **Result:** PASS
+  - **Evidence:** 0003 all four fields set
+- **G1-BUP-04** (P1) curl:yes `BUP-04_force_mark_found_via.json`
+  - **Pre:** 0004 clean
+  - **Expected:** 200; found_via=SCAN_METHOD_FORCE_MARK round-trips (DB stores "force_mark")
+  - **Verify:** BGP + bags
+  - **Result:** PASS
+  - **Evidence:** 0004 foundVia FORCE_MARK; enum #2 round-trip
+- **G1-BUP-05** (P0) curl:yes `BUP-05_partial_no_clobber.json`
+  - **Pre:** 0001 has found only (from BUP-01)
+  - **Expected:** 200; send verified ONLY -> found_* PRESERVED, verified_* ADDED. Partial update writes only keys present per package (adapter:133-137); no clobber
+  - **Verify:** BGP: 0001 found 12:00 unchanged + verified 13:15 added
+  - **Result:** PASS
+  - **Evidence:** 0001 both set; found untouched
+- **G1-BUP-06** (P1) curl:yes `BUP-06_found_via_unknown_dropped.json`
+  - **Pre:** 0002 has verified only (from BUP-02)
+  - **Expected:** 200; foundAt set BUT foundVia=SCAN_METHOD_UNKNOWN is DROPPED by handler enum_name_or_nil (handler:163,262) -> found_via stays null; verified preserved
+  - **Verify:** BGP: 0002 found_at=12:10 set, found_via NULL, verified preserved
+  - **Result:** PASS
+  - **Evidence:** FINDING: UNKNOWN scan-method silently dropped; found_at persists with NULL found_via
+- **G1-BUP-07** (P0) curl:yes `BUP-07_scan_no_match.json`
+  - **Pre:** seed
+  - **Expected:** HTTP 404 {code:not_found, msg:"Bag not found: ... scan_identifier=NOPE-9999"} - adapter raises RecordNotFound (adapter:260-267) -> handler:179-180; metric reason:not_found
+  - **Verify:** BGP: seed unchanged
+  - **Result:** PASS
+  - **Evidence:** 404 msg="Bag not found: ... NOPE-9999"
+- **G1-BUP-08** (P0) curl:yes `BUP-08_atomic_rollback_mixed.json`
+  - **Pre:** 0003 has found+verified (from BUP-03)
+  - **Expected:** HTTP 404 not_found on NOPE-8888; the valid 0003 update (verified->18:00) in the SAME call is ROLLED BACK - whole Bag.transaction (adapter:124-142)
+  - **Verify:** BGP: 0003 verified STILL 13:30, updatedAt UNCHANGED (=23:08:04)
+  - **Result:** PASS
+  - **Evidence:** atomicity across the packages array confirmed
+- **G1-BUP-09** (P1) curl:yes `BUP-09_dup_scan_seed.json (seed) + BUP-09_multiple_bags.json (BulkUpdatePackages)`
+  - **Pre:** seed TWO bags with the SAME scan_identifier (BUP-DUP-1 x2) under one order_delivery_id via ReplacePackages
+  - **Expected:** 200; BOTH matching bags updated (adapter updates all matches - resolve_bags_by_scan_identifier adapter:270-281 returns all, then bulk_update_packages adapter:139 updates each); warn log (adapter:271-277, log_id cba82003d1c8) + metric `packing_domain.bulk_update_packages.fail{reason=multiple_bags}` (adapter:278). Note: reason lives on the `.fail` metric even though the call succeeds (multiple_bags does NOT raise; only not_found raises).
+  - **Verify:** BGP + bags: BOTH rows carry the new verified_*; Datadog/log signal for reason=multiple_bags
+  - **Result:** PARTIAL (2026-08-10)
+  - **Evidence:** RAN on staging ODID 20813429596430808 (DevGen OAuth-blocked -> reused prior staging order which had 0 bags = interference-free; full ReplacePackages reseed). Seeded 2 dup rows: id 1105778075 (index 1, BUP-DUP-A) + id 1105778076 (index 2, BUP-DUP-B), both bag_scan_identifier=BUP-DUP-1, both found/verified NULL (confirmed via BulkGetPackages + Blazer `shoppers_staging`, totalPackageCount=2). BulkUpdatePackages {scanIdentifier BUP-DUP-1, verifiedAt 2026-08-10T15:00:00Z, verifiedVia SCAN_METHOD_SCANNER} -> **HTTP 200**; response returned BOTH bags updated. Blazer read-back: BOTH rows verified_at=2026-08-10 15:00:00Z, verified_via="scanner", updated_at=22:54:49Z, found_* still NULL. **[CONFIRMED]** rows-updated + HTTP 200 exactly per code. **[NOT independently confirmed]** the multiple_bags metric/warn emission: Datadog `packing_domain.bulk_update_packages.fail` returned NO data even unfiltered over 4h, DD logs for the odid/log_id returned nothing, and quickwit/log-nexus/Portal/DevGen were all OAuth-blocked this session — staging shoppers telemetry not observable via available tooling. The metric+warn fire in the SAME `matches.size > 1` branch (adapter:270-281) that returns all matches, and both rows being updated is only reachable through that branch, so the emitting branch provably executed — but the emission itself was not directly observed. Column existence confirmed via Blazer information_schema.columns (Portal OAuth-blocked fallback).
+- **G1-BUP-10** (P0) curl:yes `BUP-10_multi_package.json`
+  - **Pre:** all 4 seeded
+  - **Expected:** 200; all 4 bags updated in ONE call, found_at=14:00:0x + SCANNER; each bag verified_* preserved (0004 verified stays null)
+  - **Verify:** BGP + bags: 4 rows updated, found 14:00:0x scanner
+  - **Result:** PASS
+  - **Evidence:** 4 bags updated single call; verified preserved
+- **G1-BUP-11** (P1) curl:yes `BUP-10_multi_package.json (REPLAY)`
+  - **Pre:** state after BUP-10
+  - **Expected:** 200; identical payload replay -> identical data; updatedAt UNCHANGED vs BUP-10 -> idempotent no-op (AR update! skips SQL when no attr dirty)
+  - **Verify:** bags table: updatedAt == BUP-10 (23:08:49) for all 4
+  - **Result:** PASS
+  - **Evidence:** FINDING: replay is a DB no-op, not a re-write (updated_at not bumped)

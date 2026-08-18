@@ -1,0 +1,8 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    { "visualIdentifier": "ST-CODE39",  "scanIdentifier": "RP06-0001", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_CODE_39" },
+    { "visualIdentifier": "ST-QR",      "scanIdentifier": "RP06-0002", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_QR_CODE" },
+    { "visualIdentifier": "ST-ABSENT",  "scanIdentifier": "RP06-0003" }
+  ]
+}

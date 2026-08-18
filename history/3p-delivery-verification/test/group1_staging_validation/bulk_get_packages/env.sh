@@ -1,0 +1,5 @@
+export BASE_URL="https://rpc-shoppers-shoppers-stg.instacart.team"
+export ODID_A="20812396763494404"
+export ODID_B="20813448721449264"
+export ODID_C="20813450726495452"
+export AUTH_HEADER=""

@@ -1,0 +1,6 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    { "scanIdentifier": "BUP-0002", "foundAt": "2026-08-05T12:10:00Z", "foundVia": "SCAN_METHOD_UNKNOWN" }
+  ]
+}

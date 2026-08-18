@@ -1,0 +1,79 @@
+# Bulk Get Packages — case matrix
+
+One test case per bullet. Scroll horizontally to read the full line.
+
+Fields: **Case** (Prio) · `Request` · **Pre:** fixture · **Expected:** · **Verify:** · **Result:** · **Evidence:**
+
+
+- **G1-BGP-01** (P0) curl:yes `G1-BGP-01_single.json / BulkGetPackages`
+  - **Pre:** ODID_A seeded with 2 packages (idx 1-2) via ReplacePackages
+  - **Expected:** HTTP 200; packages[] has 2 rows for ODID_A, index 1 then 2, all fields round-trip (visual/scan/location/found/verified)
+  - **Verify:** Blazer shoppers_staging bags: COUNT=2, idx 1-2 for ODID_A
+  - **Result:** PASS
+  - **Evidence:** ODID_A=20812396763494404; ids 1102566675(idx1,BAG-1-OF-2,SHELF/A1,CODE_39) + 1102566676(idx2,BAG-2-OF-2,FREEZER/F3,QR); DB COUNT=2 idx1-2
+- **G1-BGP-02** (P0) curl:yes `G1-BGP-02_multi_reversed.json / BulkGetPackages`
+  - **Pre:** ODID_A (2 pkgs) + ODID_B (3 pkgs); request lists B BEFORE A
+  - **Expected:** HTTP 200; 5 rows; sorted by order_delivery_id ASC then index ASC REGARDLESS of request order -> A(idx1,2) then B(idx1,2,3). Flat packages[] (no per-delivery grouping message); grouping is implicit via order_delivery_id field
+  - **Verify:** Blazer: A=2 rows idx1-2, B=3 rows idx1-3
+  - **Result:** PASS
+  - **Evidence:** req [B,A] -> A:675(i1),676(i2) then B:1102567080(i1),081(i2),082(i3); ascending odid asc despite reversed request; total 5
+- **G1-BGP-03** (P1) curl:yes `G1-BGP-03_mix_populated_empty.json / BulkGetPackages`
+  - **Pre:** ODID_A (2 pkgs) + ODID_C (order provisioned, 0 packages)
+  - **Expected:** HTTP 200; 2 rows (ODID_A only); the zero-package delivery contributes nothing, no error, no placeholder
+  - **Verify:** Blazer: ODID_C returns no bag rows
+  - **Result:** PASS
+  - **Evidence:** req [A,C] -> count=2 (675,676); C absent from bags; no error
+- **G1-BGP-04** (P1) curl:yes `G1-BGP-04_zero_packages.json / BulkGetPackages`
+  - **Pre:** ODID_C: order provisioned via DevGen but never seeded with packages
+  - **Expected:** HTTP 200; body {} (empty packages[]); no error for a valid-but-empty delivery
+  - **Verify:** Blazer: 0 bag rows for ODID_C
+  - **Result:** PASS
+  - **Evidence:** req [C] -> HTTP 200 {}; count=0
+- **G1-BGP-05** (P1) curl:yes `G1-BGP-05_nonexistent.json / BulkGetPackages`
+  - **Pre:** none (odid 999999999999999 never existed)
+  - **Expected:** HTTP 200; body {} (empty packages[]); nonexistent odid is silently ignored, NOT an error (index scan, rows=1 est, matches nothing)
+  - **Verify:** Blazer: 0 bag rows for that id
+  - **Result:** PASS
+  - **Evidence:** req [999999999999999] -> HTTP 200 {}; count=0
+- **G1-BGP-06** (P1) curl:yes `G1-BGP-06_large_list.json / BulkGetPackages`
+  - **Pre:** ODID_A(2)+ODID_B(3)+ODID_C(0)+7 nonexistent ids (10 ids total)
+  - **Expected:** HTTP 200; 5 rows (A+B); empty/nonexistent ids in the batch silently contribute nothing; ordering still odid ASC, index ASC
+  - **Verify:** Blazer: A=2,B=3; others 0
+  - **Result:** PASS
+  - **Evidence:** req 10 ids -> count=5: A(675,676) then B(080,081,082); 8 empty/nonexistent ids ignored
+- **G1-BGP-07** (P0) curl:yes `G1-BGP-07_empty_list.json / BulkGetPackages`
+  - **Pre:** none
+  - **Expected:** HTTP 400 body {code:invalid_argument, msg:"order_delivery_ids is required"} — sole handler guard (packages_service_handler.rb:41)
+  - **Verify:** response body code/msg; nothing read
+  - **Result:** PASS
+  - **Evidence:** req {orderDeliveryIds:[]} -> HTTP 400 {code:invalid_argument, msg:order_delivery_ids is required}
+- **G1-BGP-08** (P1) curl:yes `G1-BGP-08_omitted_field.json / BulkGetPackages`
+  - **Pre:** none
+  - **Expected:** HTTP 400 invalid_argument — omitted repeated field decodes to empty, same guard as empty list
+  - **Verify:** response body code/msg
+  - **Result:** PASS
+  - **Evidence:** req {} -> HTTP 400 {code:invalid_argument, msg:order_delivery_ids is required}
+- **G1-BGP-09** (P2) curl:yes `G1-BGP-09_duplicate.json / BulkGetPackages`
+  - **Pre:** ODID_A (2 pkgs); id listed twice
+  - **Expected:** HTTP 200; 2 rows (NOT 4). WHERE order_delivery_id IN (A,A) de-dups; each bag returned once
+  - **Verify:** Blazer: A=2 rows
+  - **Result:** PASS
+  - **Evidence:** req [A,A] -> count=2 (675,676); no duplication
+- **G1-BGP-10** (P0) curl:yes `G1-BGP-10_zero_odid.json / BulkGetPackages`
+  - **Pre:** none
+  - **Expected:** EXPECTED-BY-INVARIANT: HTTP 400 invalid_argument (single-id methods reject order_delivery_id=0). ACTUAL: request TIMES OUT (~30s+, curl http=000) — bulk path has NO per-odid zero guard so 0 reaches the DB and seq-scans the whole bags table
+  - **Verify:** EXPLAIN SELECT * FROM bags WHERE order_delivery_id=0 -> Seq Scan, est 1,068,132,672 rows, cost 43.7M (vs Index Scan rows=1 for real ids). Blazer COUNT(*) on odid=0 also times out at 25s
+  - **Result:** FAIL — FINDING #1 (reliability/DoS): missing zero-guard on bulk_get_packages -> full-table seq scan -> request hang
+  - **Evidence:** req ["0"] -> curl (28) timeout after 30s, http=000; reproduced twice. Handler packages_service_handler.rb:41 only checks .empty?
+- **G1-BGP-11** (P0) curl:yes `G1-BGP-11_zero_mixed.json / BulkGetPackages`
+  - **Pre:** ODID_A (2 pkgs); request = [0, A]
+  - **Expected:** One valid id in the batch does NOT save it: a single 0 anywhere in the list forces the seq scan. ACTUAL: TIMES OUT (http=000)
+  - **Verify:** same EXPLAIN as G1-BGP-10; the IN(...) list containing 0 still seq-scans
+  - **Result:** FAIL — FINDING #1 (same root cause): any batch containing 0 hangs, even alongside valid ids
+  - **Evidence:** req ["0",A] -> curl (28) timeout after 30s, http=000
+- **G1-BGP-12** (P2) curl:yes `G1-BGP-12_nonnumeric.json / BulkGetPackages`
+  - **Pre:** none
+  - **Expected:** HTTP 500 {code:internal, msg:"Encoding error: ... Non-number characters in quoted integer"} — proto3-JSON int64 parse failure at the codec layer, before the handler
+  - **Verify:** response body code/msg
+  - **Result:** PASS (documents codec-layer behavior: malformed int64 -> 500 internal, not 400)
+  - **Evidence:** req ["not-a-number"] -> HTTP 500 {code:internal, msg:Encoding error: Error parsing JSON @1:35: Non-number characters in quoted integer}

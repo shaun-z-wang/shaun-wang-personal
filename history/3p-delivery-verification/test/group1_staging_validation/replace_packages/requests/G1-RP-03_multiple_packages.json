@@ -1,0 +1,9 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    { "visualIdentifier": "MP-1", "scanIdentifier": "RP03-0001", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_CODE_39", "locationType": "LOCATION_TYPE_SHELF",   "locationName": "A1" },
+    { "visualIdentifier": "MP-2", "scanIdentifier": "RP03-0002", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_CODE_39", "locationType": "LOCATION_TYPE_FRIDGE",  "locationName": "R2" },
+    { "visualIdentifier": "MP-3", "scanIdentifier": "RP03-0003", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_QR_CODE", "locationType": "LOCATION_TYPE_FREEZER", "locationName": "F3" },
+    { "visualIdentifier": "MP-4", "scanIdentifier": "RP03-0004", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_QR_CODE", "locationType": "LOCATION_TYPE_HOT",     "locationName": "H4" }
+  ]
+}

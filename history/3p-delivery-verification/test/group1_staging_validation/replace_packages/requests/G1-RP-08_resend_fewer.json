@@ -1,0 +1,14 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    {
+      "visualIdentifier": "BAG-1-OF-1",
+      "scanIdentifier": "RP08-BARCODE-0001",
+      "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_CODE_39",
+      "locationType": "LOCATION_TYPE_SHELF",
+      "locationName": "A1",
+      "packageType": "PACKAGE_TYPE_BAG",
+      "hasAlternativeIdentifier": false
+    }
+  ]
+}

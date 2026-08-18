@@ -1,0 +1,7 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    { "scanIdentifier": "RP01-BARCODE-0001", "foundAt": "2026-08-05T12:00:00Z", "foundVia": "SCAN_METHOD_SCANNER" },
+    { "scanIdentifier": "RP01-BARCODE-0002", "foundAt": "2026-08-05T12:00:05Z", "foundVia": "SCAN_METHOD_SCANNER" }
+  ]
+}

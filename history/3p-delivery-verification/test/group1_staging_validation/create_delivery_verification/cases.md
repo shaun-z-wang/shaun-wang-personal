@@ -1,0 +1,211 @@
+# Create Delivery Verification — case matrix
+
+One test case per bullet. Scroll horizontally to read the full line.
+
+Fields: **Case** (Prio) · `Request` · **Pre:** fixture · **Expected:** · **Verify:** · **Result:** · **Evidence:**
+
+
+- **G1-CDV-01** (P0) curl:yes `G1-CDV-01.json`
+  - **Pre:** none
+  - **Expected:** HTTP 500 body {code:internal, meta.error_class:GRPC::InvalidArgument, msg:"3:order_delivery_id is required"} — synchronous; gRPC code 3 preserved in msg, HTTP adapter wraps as internal
+  - **Verify:** response body meta.error_class; nothing enqueued
+  - **Result:** PASS (doc said 400; actual 500 — FINDING #1)
+  - **Evidence:** HTTP 500 {code:internal, msg:"3:order_delivery_id is required", meta.error_class:GRPC::InvalidArgument}
+- **G1-CDV-02** (P0) curl:yes `G1-CDV-02.json`
+  - **Pre:** none
+  - **Expected:** HTTP 500 body {code:internal, meta.error_class:GRPC::InvalidArgument} — neither pickup nor dropoff; synchronous
+  - **Verify:** response body meta.error_class
+  - **Result:** PASS (500, distinct msg)
+  - **Evidence:** HTTP 500 {code:internal, meta.error_class:GRPC::InvalidArgument} (msg = pickup-or-dropoff required)
+- **G1-CDV-03** (P0) curl:yes `G1-CDV-03.json`
+  - **Pre:** fresh order
+  - **Expected:** 200 {}; pickup shell, zero package rows, no error
+  - **Verify:** packages RPC: no rows; no error log
+  - **Result:** PASS
+  - **Evidence:** O7; 200 {}; no rows, no error (empty details early-return line 75)
+- **G1-CDV-04** (P0) curl:yes `G1-CDV-04.json`
+  - **Pre:** fresh order
+  - **Expected:** 200 {}; ShopperOrderDeliveryPhoto row; :delivery_photo_uploaded Hub event
+  - **Verify:** Blazer shopper_order_delivery_photos; Hub/WittyCart
+  - **Result:** PASS (live, retested 2026-08-07). Photo persists end-to-end after the T5 fix (#843586, commit eb6c0298398db, verified ancestor of origin/master AND deployed to staging). ShopperOrderDeliveryPhoto row created with a .png key; DD proof_of_delivery_photo_persistence.count{env:staging}=1 success:true. Pre-fix (2026-08-05) was BLOCKED: filename-less StringIO -> CarrierWave store! -> TypeError 'no implicit conversion of nil into String'. T5 sets original_filename='photo.png' so CarrierWave derives the .png key.
+  - **Evidence:** odid 20829590130517604 (user 20829587672215552, order 20829590130511896); Blazer shoppers_staging.shopper_order_delivery_photos id=110925449 address_id=20829587759211076 delivery_photo=fc405e82-9a00-4d37-8433-af55e24a9b45.png created_at 2026-08-07T19:58:33Z; DD custom.fulfillment.delivery.delivery_verification.proof_of_delivery_photo_persistence.count{env:staging} success:true @19:58:30Z (only datapoint over 4h, zero failures). Prior pre-fix fail: odid 20813358498449172 TypeError @2026-08-05T23:01:15Z.
+- **G1-CDV-05** (P1) curl:yes `G1-CDV-05.json`
+  - **Pre:** order w/ resolvable address
+  - **Expected:** address_id resolved; row keyed (order_delivery_id,address_id)
+  - **Verify:** Blazer: address_id populated on photo row
+  - **Result:** PASS (live, retested 2026-08-07). address_id resolved and row keyed by (order_delivery_id, address_id) -- satisfied by the CDV-04 run after the T5 deploy. Pre-fix was BLOCKED (same fetch_address_id/store raise as 04).
+  - **Evidence:** same run as CDV-04: row id=110925449 order_delivery_id=20829590130517604 address_id=20829587759211076 (resolved, non-null), .png key, created_at 2026-08-07T19:58:33Z.
+- **G1-CDV-06** (P0) curl:yes `G1-CDV-06.json`
+  - **Pre:** fresh order
+  - **Expected:** 200 {}; OrderDeliveryIdentification row, source=fulfillment_provider
+  - **Verify:** Blazer order_delivery_identifications
+  - **Result:** PASS
+  - **Evidence:** O2; order_delivery_identifications source=fulfillment_provider; DD id_verification_persistence success:true=1
+- **G1-CDV-07** (P1) curl:yes `G1-CDV-07.json`
+  - **Pre:** fresh order
+  - **Expected:** 200 {}; no ID row (early return on verified=false)
+  - **Verify:** Blazer: no order_delivery_identifications row
+  - **Result:** PASS
+  - **Evidence:** O7; no id row; DD id success emitted only for O2
+- **G1-CDV-08** (P0) curl:yes `G1-CDV-08.json`
+  - **Pre:** pin_exchange CertifiedDelivery exists
+  - **Expected:** CertifiedDelivery -> COMPLETED
+  - **Verify:** Blazer certified_deliveries.state; metric
+  - **Result:** PASS
+  - **Evidence:** order A 20812718378501700 (recipe: generate_order customer_handoff_pin); GetPinExchangeCertifiedDelivery read AWAITING_ARRIVAL -> pin-only {verified:true} -> COMPLETED; reproduced on order B 20812788019501808 (before/after reads)
+- **G1-CDV-09** (P1) curl:yes `G1-CDV-09.json`
+  - **Pre:** pin_exchange CertifiedDelivery exists
+  - **Expected:** PIN workflow not advanced
+  - **Verify:** Blazer: state unchanged
+  - **Result:** PASS
+  - **Evidence:** order B 20812788019501808; pre AWAITING_ARRIVAL -> pin.verified=false -> still AWAITING_ARRIVAL (early return unless verified; no metric by design)
+- **G1-CDV-10** (P1) curl:yes `G1-CDV-10.json`
+  - **Pre:** NO CertifiedDelivery w/ delivery_pin
+  - **Expected:** skip; reason=not_found metric
+  - **Verify:** Datadog pin metric reason:not_found
+  - **Result:** PASS
+  - **Evidence:** O7; DD pin_persistence success:false reason:not_found=1
+- **G1-CDV-11** (P2) curl:yes `G1-CDV-11.json`
+  - **Pre:** CertifiedDelivery of different type
+  - **Expected:** warn but still transition
+  - **Verify:** Blazer state + warn log
+  - **Result:** ACCEPTED - won't-do (user-accepted, closed; off-nominal shape unprovisionable)
+  - **Evidence:** User reviewed and accepts this is unattainable on staging. no tooling sets delivery_pin with type != pin_exchange (customer_handoff_pin hardcodes pin_exchange; CreatePinExchange coerces; change_certified_delivery sets neither). Defensive telemetry branch -> PinPersistenceService RSpec only if ever needed
+- **G1-CDV-12** (P0) curl:yes `G1-CDV-12.json`
+  - **Pre:** fresh order + IMG_PNG
+  - **Expected:** 200 {}; customer_signature = <odp.id>-<sha256>.png (private S3)
+  - **Verify:** Blazer order_delivery_properties.customer_signature; DD signature_persistence.count{success:true}
+  - **Result:** PASS
+  - **Evidence:** O1; customer_signature 594281031-776130f3...png; DD signature_persistence success:true
+- **G1-CDV-13** (P1) curl:yes `G1-CDV-13.json`
+  - **Pre:** IMG_JPEG (real image/jpeg)
+  - **Expected:** content_type preserved; filename ends .jpg/.jpeg (not forced .png)
+  - **Verify:** Blazer: customer_signature extension
+  - **Result:** PASS (.jpg preserved, not forced .png)
+  - **Evidence:** O5; customer_signature 594281032-c028d7aa....jpg
+- **G1-CDV-14** (P1) curl:yes `G1-CDV-14.json`
+  - **Pre:** fresh order
+  - **Expected:** 200 {}; no-op, no error (blank image_url)
+  - **Verify:** Blazer: customer_signature stays null; no error
+  - **Result:** PASS
+  - **Evidence:** O7; customer_signature null, no error, no metric (blank imageUrl early-return)
+- **G1-CDV-15** (P1) curl:yes `G1-CDV-15.json`
+  - **Pre:** IMG_PNG + IMG_PNG2
+  - **Expected:** warning logged; first url used
+  - **Verify:** log warn; Blazer photo row from first url
+  - **Result:** PASS (live, retested 2026-08-07). Multi-url: exactly ONE row persisted (first url used) after the T5 deploy; the >1-url warn (service.rb:19) still fires log-only. Pre-fix was BLOCKED for the row half (fetch_address_id/store raise).
+  - **Evidence:** odid 20829614511444524 (user 20829612578215924, order 20829614511453680); Blazer shoppers_staging.shopper_order_delivery_photos id=110925452 address_id=20829612661211424 delivery_photo=8e9e25b2-9532-434b-b11c-88351939bae5.png created_at 2026-08-07T20:02:37Z (single row); DD proof_of_delivery_photo_persistence.count{env:staging} success:true @20:02:30Z.
+- **G1-CDV-16** (P0) curl:yes `G1-CDV-16.json`
+  - **Pre:** fresh order + IMG_PNG
+  - **Expected:** all types persisted, order packages->photo->id->pin->signature
+  - **Verify:** Blazer all four tables + DD metrics
+  - **Result:** BLOCKED as combined via curl-on-staging (RELAY-919: photo step raises → aborts id/pin/signature). Reconfirmed on unattended+batched O9 (photo+sig → nothing; sig-only ✓). Components verified independently across O1/O2/O4/O5/O9. This IS the RELAY-919 repro. Needs RSpec for the true combined all-types assertion. NOTE (2026-08-07): photo aspect now covered by CDV-04 (T5 #843586 deployed+working on staging); the combined case remains blocked only on seeding barcoded bags for the package-scan step (same limitation as G2-3), NOT on T5.
+  - **Evidence:** O4/O9; photo+sig → nothing; sig-only ✓ (O9 594281057), id-only ✓ (O4)
+- **G1-CDV-17** (P0) curl:yes `G1-CDV-17.json --replay`
+  - **Pre:** prior request fully persisted
+  - **Expected:** no dup photo/ID rows; PIN stays COMPLETED; no dup signature; no double Hub
+  - **Verify:** Blazer counts unchanged; metric count not incremented
+  - **Result:** PASS
+  - **Evidence:** O1; replay ×2 → row byte-identical (updated_at unchanged), single row, DD count not re-emitted
+- **G1-CDV-18** (P1) curl:NO `concurrency`
+  - **Pre:** two concurrent jobs, same (order_delivery_id,address_id)
+  - **Expected:** RecordNotUnique treated as idempotent no-op
+  - **Verify:** RSpec/local tier (needs parallel job fire)
+  - **Result:** DEFERRED (RSpec/local tier)
+  - **Evidence:** not curl-expressible
+- **G1-CDV-19** (P1) curl:yes `G1-CDV-19.json --replay`
+  - **Pre:** customer_signature already set
+  - **Expected:** skipped (pre-check + post-lock double-check); no re-download
+  - **Verify:** Blazer updated_at unchanged; DD count not incremented
+  - **Result:** PASS
+  - **Evidence:** O1; updated_at unchanged on replay; no re-download
+- **G1-CDV-20** (P1) curl:NO `concurrency`
+  - **Pre:** two concurrent signature writes
+  - **Expected:** TaskLock (1-min stale) serializes; lock-fail -> LockAcquisitionFailed retry
+  - **Verify:** RSpec/local tier (needs parallel fire)
+  - **Result:** DEFERRED (RSpec/local tier)
+  - **Evidence:** not curl-expressible
+- **G1-CDV-21** (P1) curl:yes `G1-CDV-21.json --replay`
+  - **Pre:** ID row exists
+  - **Expected:** skip insert; concurrent insert -> RecordNotUnique no-op
+  - **Verify:** Blazer: single ID row
+  - **Result:** PASS
+  - **Evidence:** O2; replay → single id row (no dup)
+- **G1-CDV-22** (P1) curl:yes `G1-CDV-22.json --replay`
+  - **Pre:** CertifiedDelivery COMPLETED
+  - **Expected:** skipped
+  - **Verify:** Blazer: state stays COMPLETED
+  - **Result:** PASS
+  - **Evidence:** order A (COMPLETED from case 08); replay pin.verified=true -> still COMPLETED, createdAt unchanged (already-COMPLETED skip path L50-58)
+- **G1-CDV-23** (P1) curl:NO `job re-run`
+  - **Pre:** some types persisted, job re-run
+  - **Expected:** only unpersisted types re-attempted
+  - **Verify:** RSpec/local tier (needs job re-invoke)
+  - **Result:** DEFERRED (RSpec/local tier)
+  - **Evidence:** not curl-expressible
+- **G1-CDV-24** (P0) curl:yes `G1-CDV-24.json`
+  - **Pre:** IMG_4XX (403/404)
+  - **Expected:** log-and-skip, NO Sidekiq retry; image_download.count failure reason
+  - **Verify:** DD image_download.count{success:false,error_type:client_error}
+  - **Result:** PASS (error_type=http_client_error)
+  - **Evidence:** O7; DD image_download success:false error_type:http_client_error (single, no retry)
+- **G1-CDV-25** (P0) curl:yes `G1-CDV-25.json`
+  - **Pre:** IMG_5XX (500/timeout)
+  - **Expected:** re-raised -> Sidekiq retries
+  - **Verify:** DD image_download failure; job retry attempts
+  - **Result:** PASS (error_type=http_error, ×3 retries)
+  - **Evidence:** O7; DD image_download success:false error_type:http_error ×3 (Sidekiq retried)
+- **G1-CDV-26** (P1) curl:yes `G1-CDV-26.json`
+  - **Pre:** IMG_TOOLARGE (>20MB)
+  - **Expected:** too_large reason, skip
+  - **Verify:** DD image_download.count{error_type:too_large}
+  - **Result:** PASS
+  - **Evidence:** order 20812707924501688; 40MB Wikimedia JPEG; HTTP 200; DD image_download.count{kind:signature,error_type:too_large}.as_count()=1 @2026-08-05T21:04:00Z (log-and-skip, no retry, nothing persisted)
+- **G1-CDV-27** (P1) curl:yes `G1-CDV-27.json`
+  - **Pre:** IMG_GIF (gif/html)
+  - **Expected:** unsupported_content_type reason, skip
+  - **Verify:** DD image_download.count{error_type:unsupported_content_type}
+  - **Result:** PASS
+  - **Evidence:** O7; DD image_download success:false error_type:unsupported_content_type
+- **G1-CDV-28** (P1) curl:yes `G1-CDV-28.json`
+  - **Pre:** IMG_SSRF (non-https/private IP)
+  - **Expected:** blocked by ssrf_filter, skip w/ mapped error_type
+  - **Verify:** DD image_download.count{success:false} ssrf error_type
+  - **Result:** PASS (error_type=non_https — scheme guard, not private-IP ssrf — FINDING #2)
+  - **Evidence:** O7; DD image_download success:false error_type:non_https (http:// scheme)
+- **G1-CDV-29** (P1) curl:yes `G1-CDV-29.json`
+  - **Pre:** order w/o resolvable address
+  - **Expected:** skip with no_address_id metric
+  - **Verify:** DD photo no_address_id metric
+  - **Result:** PASS (observed in DD)
+  - **Evidence:** DD proof_of_delivery_photo_persistence success:false reason:no_address_id observed (graceful path when OrderHandlingDetails returns blank address; distinct from the RAISE path my orders hit — see FINDING #3)
+- **G1-CDV-30** (P0) curl:partial `G1-CDV-30.json`
+  - **Pre:** IMG_5XX (persistent 5xx)
+  - **Expected:** 3 retries exhausted -> create_delivery_verification_job.retry_exhausted.count + ICError
+  - **Verify:** DD retry_exhausted.count (wait for 3 Sidekiq attempts)
+  - **Result:** DEFERRED (retry-exhaustion tier; 3× http_error retries observed in 25, exhaustion metric not asserted live)
+  - **Evidence:** partial signal via G1-CDV-25
+- **G1-CDV-31** (P1) curl:NO `fault-injection`
+  - **Pre:** photo row created, Hub publish fails
+  - **Expected:** row persists (failure swallowed); no exception to caller
+  - **Verify:** RSpec/local tier (needs Hub stub failure)
+  - **Result:** DEFERRED (RSpec/local tier)
+  - **Evidence:** not curl-expressible
+- **G1-CDV-32** (P1) curl:yes `G1-CDV-32.json`
+  - **Pre:** requirements request ID+PIN; payload signature-only
+  - **Expected:** still succeeds; missing_required_verification.count{kind,step} (observe-only)
+  - **Verify:** DD missing_required_verification.count
+  - **Result:** RECLASSIFIED -> Group 2 (FPS-tier)
+  - **Evidence:** missing_required_verification metric emitted ONLY by FPS Go wrapper (observeMissingRequiredVerifications); shoppers direct RPC has no cross-check (persists what's given, 200). Verify via FPS gRPC. Analogous to G1-RP-05
+- **G1-CDV-33** (P1) curl:yes `G1-CDV-33.json`
+  - **Pre:** packages recorded but scan absent from payload
+  - **Expected:** missing-barcodes log + kind=package metric
+  - **Verify:** DD metric kind=package; log
+  - **Result:** RECLASSIFIED -> Group 2 (FPS-tier)
+  - **Evidence:** same FPS wrapper (logMissingPackages, kind:package); shoppers bulk_update_packages checks only sent-not-recorded (opposite direction). One metric with 32: missing_required_verification.count{kind,step}
+- **G1-CDV-34** (P0) curl:yes `G1-CDV-34.json`
+  - **Pre:** rich nested msg + timestamps
+  - **Expected:** all fields preserved through base64 Sidekiq string arg
+  - **Verify:** Blazer: all sub-fields persisted (implicit in G1-CDV-16)
+  - **Result:** PASS (implicit)
+  - **Evidence:** nested signature+id sub-fields survived base64 Sidekiq round-trip (O1/O2/O4/O5 all persisted correct field values)

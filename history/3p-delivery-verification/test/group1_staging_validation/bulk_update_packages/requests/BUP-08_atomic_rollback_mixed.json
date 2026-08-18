@@ -1,0 +1,7 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    { "scanIdentifier": "BUP-0003", "verifiedAt": "2026-08-05T18:00:00Z", "verifiedVia": "SCAN_METHOD_SCANNER" },
+    { "scanIdentifier": "NOPE-8888", "verifiedAt": "2026-08-05T18:00:00Z", "verifiedVia": "SCAN_METHOD_SCANNER" }
+  ]
+}

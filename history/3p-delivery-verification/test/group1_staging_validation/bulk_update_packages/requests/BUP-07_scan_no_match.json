@@ -1,0 +1,6 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    { "scanIdentifier": "NOPE-9999", "verifiedAt": "2026-08-05T13:00:00Z", "verifiedVia": "SCAN_METHOD_SCANNER" }
+  ]
+}

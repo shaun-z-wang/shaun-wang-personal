@@ -1,0 +1,103 @@
+# Get Verification Requirements — case matrix
+
+One test case per bullet. Scroll horizontally to read the full line.
+
+Fields: **Case** (Prio) · `Request` · **Pre:** fixture · **Expected:** · **Verify:** · **Result:** · **Evidence:**
+
+
+- **G1-GVR-01** (P0) curl:yes `G1-GVR-01.json`
+  - **Pre:** marketplace order, no special items
+  - **Expected:** 200 {"dropoff":{"signature":{},"idVerification":{},"pin":{}}} — all requirements false/omitted (proto3 JSON omits false bools)
+  - **Verify:** RPC response
+  - **Result:** PASS
+  - **Evidence:** order 20812396763494404; 200 dropoff all-empty
+- **G1-GVR-02** (P0) curl:yes `G1-GVR-02.json`
+  - **Pre:** alcohol cart, US zone (Safeway w1, delivery state CA)
+  - **Expected:** id_verification.required=true, minimumAge=21 (US default); signature per state flag
+  - **Verify:** RPC response
+  - **Result:** PASS
+  - **Evidence:** order 20813434056449244; {"idVerification":{"required":true,"minimumAge":"21"},"signature":{},"pin":{}}
+- **G1-GVR-03** (P1) curl:yes `G1-GVR-03.json`
+  - **Pre:** alcohol cart, Canada zone (zone 693, country 124)
+  - **Expected:** minimumAge=19 (Canada default; distinct from US 21)
+  - **Verify:** RPC response
+  - **Result:** PASS
+  - **Evidence:** order 20813459830409416; {"idVerification":{"required":true,"minimumAge":"19"}}
+- **G1-GVR-04** (P1) curl:no `—`
+  - **Pre:** >=2 non-RX age-restricted lines with distinct ages
+  - **Expected:** minimum_age = max across lines; RX excluded from age math
+  - **Verify:** (unit)
+  - **Result:** ACKNOWLEDGED — OK TO SKIP (not DevGen-provisionable; GVR-02/03 cover single-line age)
+  - **Evidence:** alcohol overrides idv_type->:alcohol (uses zone age, not max-of-lines; svc.rb:139/148). Max-of-lines (age_restricted_minimum_age, svc.rb:278-284) only fires on the :age_restricted (non-alcohol) path; controlled per-line ages not DevGen-provisionable. GVR-02/03 prove single-line age resolution.
+- **G1-GVR-05** (P1) curl:yes `G1-GVR-05.json`
+  - **Pre:** rx cart, attended, warehouse 5, no driver/batch
+  - **Expected:** signature.required=true + id_verification.required=true, minAge=18
+  - **Verify:** RPC response
+  - **Result:** PASS
+  - **Evidence:** order 20813477676430844; {"signature":{"required":true},"idVerification":{"required":true,"minimumAge":"18"}}. Costco-always / Kroger-attended clauses are extra retailer branches (not w5); with no driver require_rx_signature? returns true via the `return true unless driver.present?` guard (svc.rb:184).
+- **G1-GVR-06** (P1) curl:no `—`
+  - **Pre:** rx, unattended, enabled_unattended_rx_shopper ON
+  - **Expected:** id/signature skipped
+  - **Verify:** RPC response
+  - **Result:** ACKNOWLEDGED — OK TO SKIP (staging); RSpec covers the logic (order_delivery_special_requirements_service_spec.rb L843/1268/1563: flag-ON+unattended skips id+signature; alcohol/OTC/age-restricted edge cases too)
+  - **Evidence:** unattended_rx_shopper_enabled? needs shopper_id from a batch (svc.rb:451-462); pre-batch Group-1 orders have no shopper_id -> flag never evaluates -> requirement falls through to required. Requires a driver enrolled in the flag + a batch.
+- **G1-GVR-07** (P1) curl:yes `G1-GVR-07.json`
+  - **Pre:** rx, is_unattended:true, no qualifying driver
+  - **Expected:** id/signature required (flag-OFF outcome)
+  - **Verify:** RPC response
+  - **Result:** PASS
+  - **Evidence:** order 20813474031409464; {"signature":{"required":true},"idVerification":{"required":true,"minimumAge":"18"}} — no shopper_id -> unattended_rx flag false -> unattended behaves as attended.
+- **G1-GVR-08** (P1) curl:no `—`
+  - **Pre:** spray-paint / restricted taxonomy L3 id 2935 line with signature_required
+  - **Expected:** signature.required=true
+  - **Verify:** RPC response
+  - **Result:** ACKNOWLEDGED — OK TO SKIP (staging); RSpec covers the logic (order_delivery_special_requirements_service_spec.rb L1413: #needs_signature? with RESTRICTED_ITEM source + signature_required:true -> true)
+  - **Evidence:** restricted_items_requiring_signature? (svc.rb:207-210) needs an order line whose restriction_requirement.signature_required=true (spray_paint/restricted_item source). No DevGen knob for a specific restricted-taxonomy item. Distinct trigger from alcohol-signature-by-state (see GVR-15).
+- **G1-GVR-09** (P0) curl:yes `G1-GVR-09.json`
+  - **Pre:** order provisioned with customer_handoff_pin "4823" (certified_deliveries.delivery_pin set)
+  - **Expected:** pin.required=true, pin.code = 4-digit code echoed
+  - **Verify:** RPC response
+  - **Result:** PASS
+  - **Evidence:** order 20813444285502584; {"pin":{"required":true,"code":"4823"}}
+- **G1-GVR-10** (P0) curl:partial `G1-GVR-10.json`
+  - **Pre:** id NOT required (marketplace)
+  - **Expected:** minimum_age omitted (no Int64Value) when not required
+  - **Verify:** RPC response
+  - **Result:** PASS (live omission half); ACKNOWLEDGED — :unknown half RSpec-covered (delivery_verification_service_spec.rb L67-74: id-required + minimum_age:nil -> coerces 0 -> minimum_age nil)
+  - **Evidence:** GVR-01: id not required -> minimumAge omitted. GVR-02/03: required & age>0 -> set. The required-but-age-0(:unknown) guard (build_id_verification minimum_age.positive?, coordinator:86) needs an id-required-but-age-0 shape (e.g. OTC min_age 0) -> RSpec.
+- **G1-GVR-11** (P0) curl:yes `G1-GVR-11.json`
+  - **Pre:** order_delivery_id never provisioned
+  - **Expected:** HTTP 404 {code:not_found, msg:NotFoundError}; rpc_order_details_not_found metric
+  - **Verify:** RPC response + DD metric
+  - **Result:** PASS
+  - **Evidence:** 999999999999999 -> HTTP 404 {"code":"not_found","msg":"NotFoundError"}; custom.delivery_verification_service.rpc_order_details_not_found fired (DD, 22:43Z window)
+- **G1-GVR-12** (P1) curl:yes `G1-GVR-12.json`
+  - **Pre:** OrderDetails RPC not-found/degraded
+  - **Expected:** surfaces NOT_FOUND + metric
+  - **Verify:** RPC response + DD metric
+  - **Result:** PASS (same observable path as 11)
+  - **Evidence:** nonexistent id exercises the OrderDetails-not-found rescue (coordinator:55-63). A live-order OrderDetails fault is not separately curl-injectable; identical rescue+metric.
+- **G1-GVR-13** (P1) curl:no `—`
+  - **Pre:** require_order_details flag ON + order_details missing
+  - **Expected:** ArgumentError + shopper_delivery.special_requirements.order_details_missing_with_flag metric
+  - **Verify:** (n/a via this RPC)
+  - **Result:** ACKNOWLEDGED — OK TO SKIP (staging); RSpec covers the logic (order_delivery_special_requirements_service_spec.rb L17-53: ArgumentError guard for order_delivery-only with flag ON). UNREACHABLE via RPC by design (coordinator always supplies order_details)
+  - **Evidence:** FINDING: coordinator #requirements ALWAYS builds the service with order_details: fetch_order_details (coordinator:28); order_details is never nil (fetch raises NOT_FOUND first). The ArgumentError guard (svc.rb:29-34) only protects callers that pass order_delivery instead. Not reachable through GetVerificationRequirements.
+- **G1-GVR-14** (P1) curl:yes(by-design) `—`
+  - **Pre:** toggle require_order_details on/off
+  - **Expected:** both paths resolve
+  - **Verify:** RPC response
+  - **Result:** PASS (by design; flag-insensitive at this RPC)
+  - **Evidence:** Because order_details is always supplied, every predicate takes the order_details.present? branch regardless of the flag. Live reads all resolved at the flag's current default (feature v1, control/default). FINDING: this RPC cannot exercise the order_delivery-only branch.
+- **G1-GVR-15** (P1) curl:yes `G1-GVR-15.json`
+  - **Pre:** alcohol order; retailers_alcohol_signature_by_state flag
+  - **Expected:** signature.required reflects flag by delivery state
+  - **Verify:** RPC response + Roulette eval
+  - **Result:** PASS
+  - **Evidence:** ALC-US order (state CA): signature=false. Roulette checkEvaluation: WA -> matchReason=ruleset (enabled -> required); CA -> no_match (disabled). Observed false == CA excluded from allowlist [TN,MA,GA,MN,MS,LA,AZ,WA,VA,OR,HI,IL,AL,CT,IA,KY,NJ,NV]. Observe true by delivering to a listed state.
+- **G1-GVR-ZERO** (P0) curl:yes `G1-GVR-ZERO.json`
+  - **Pre:** orderDeliveryId = 0
+  - **Expected:** (task/draft seed expected InvalidArgument) — ACTUAL: HTTP 404 not_found
+  - **Verify:** RPC response + DD metric
+  - **Result:** PASS-with-FINDING
+  - **Evidence:** FINDING: the READ path has NO id>0 validation (unlike CreateDeliveryVerification). 0 -> OrderDetails.get(0) -> NotFoundError -> HTTP 404 {"code":"not_found","msg":"NotFoundError"} + rpc_order_details_not_found metric. Task seed "0 -> InvalidArgument" is WRONG for this RPC.

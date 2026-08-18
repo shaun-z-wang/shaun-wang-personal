@@ -1,0 +1,7 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    { "visualIdentifier": "BUP-DUP-A", "scanIdentifier": "BUP-DUP-1", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_CODE_39", "locationType": "LOCATION_TYPE_SHELF",   "locationName": "A1", "packageType": "PACKAGE_TYPE_BAG" },
+    { "visualIdentifier": "BUP-DUP-B", "scanIdentifier": "BUP-DUP-1", "scanIdentifierType": "SCAN_IDENTIFIER_TYPE_QR_CODE", "locationType": "LOCATION_TYPE_FREEZER", "locationName": "F3", "packageType": "PACKAGE_TYPE_BAG" }
+  ]
+}

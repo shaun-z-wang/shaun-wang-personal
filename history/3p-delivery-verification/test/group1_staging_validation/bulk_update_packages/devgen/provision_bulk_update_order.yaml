@@ -1,0 +1,24 @@
+# DevGen provisioning for the BulkUpdatePackages Group 1 suite (no FPS in the loop).
+#
+# Run via the devgen-mcp-v2-staging MCP tool `run_script` (paste this YAML).
+# STOPS after generate_order — does NOT submit a fulfillment-provider batch plan,
+# so FPS SubmitBatch is never triggered (Group 1 requirement).
+#
+# create_user is REQUIRED before generate_order: without a logged-in customer,
+# generate_order fails with "Couldn't find User with 'id'=0".
+#
+# Capture `delivery_id` from the result -> that is ORDER_DELIVERY_ID in env.sh.
+# Then SEED 4 clean bags with known scan_identifiers via ReplacePackages:
+#   source env.sh
+#   ./run_case.sh ReplacePackages requests/SEED_replace_packages.json
+# The seed uses scan_identifiers BUP-0001..BUP-0004 that every BUP case targets.
+commands:
+  - name: create_user
+    output: [user_id]
+  - name: generate_order
+    output: [order_id, delivery_id]
+    params:
+      warehouse_ids: [1]          # Safeway (default staging delivery retailer)
+      service_type: "delivery"
+      user_id: "$user_id"
+      items_found: 10

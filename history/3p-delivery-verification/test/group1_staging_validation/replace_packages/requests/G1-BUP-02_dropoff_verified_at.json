@@ -1,0 +1,7 @@
+{
+  "orderDeliveryId": "__ODID__",
+  "packages": [
+    { "scanIdentifier": "RP01-BARCODE-0001", "verifiedAt": "2026-08-05T13:00:00Z", "verifiedVia": "SCAN_METHOD_SCANNER" },
+    { "scanIdentifier": "RP01-BARCODE-0002", "verifiedAt": "2026-08-05T13:00:05Z", "verifiedVia": "SCAN_METHOD_SCANNER" }
+  ]
+}
