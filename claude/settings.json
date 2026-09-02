@@ -1,30 +1,31 @@
 {
   "env": {
     "CLAUDE_CODE_DISABLE_EXPERIMENTAL_BETAS": "0",
-    "CLOUD_ML_REGION": "global",
     "ENABLE_TOOL_SEARCH": "true",
     "OTEL_LOGS_EXPORTER": "otlp",
     "DISABLE_AUTOUPDATER": "1",
     "OTEL_LOG_TOOL_DETAILS": "1",
     "OTEL_METRICS_EXPORTER": "otlp",
-    "CLAUDE_CODE_USE_VERTEX": "1",
-    "CLAUDE_CODE_USE_BEDROCK": "0",
-    "ANTHROPIC_VERTEX_BASE_URL": "https://aigateway.instacart.tools/proxy/claude-code/vertex/v1",
-    "ANTHROPIC_VERTEX_PROJECT_ID": "generative-ai-instacart",
     "OTEL_EXPORTER_OTLP_ENDPOINT": "http://otlp.proxy.datadog.internal.pika.ac:4317",
     "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-opus-4-8",
     "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
-    "CLAUDE_CODE_SKIP_VERTEX_AUTH": "1",
     "OTEL_METRICS_INCLUDE_VERSION": "true",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-haiku-4-5",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-sonnet-4-6",
     "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
-    "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
-    "CLAUDE_CODE_AUTO_COMPACT_WINDOW": 200000,
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "OTEL_RESOURCE_ATTRIBUTES": "service.name=claude-code-cli,user.email=shaun.wang@instacart.com,provider=vertex",
-    "ANTHROPIC_CUSTOM_HEADERS": "x-aigateway-user: shaun.wang@instacart.com"
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-tally-glm-5.2-priority[1m]",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL_NAME": "GLM 5.2 Priority (1M context)",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION": "Tally-routed Opus alias",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-tally-gpt-5.6-luna",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL_NAME": "GPT-5.6 Luna",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL_DESCRIPTION": "Tally-routed Sonnet alias",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-tally-deepseek-v4-flash-0731-priority[1m]",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME": "DeepSeek V4 Flash 0731 Priority (1M context)",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL_DESCRIPTION": "Tally-routed Haiku alias",
+    "ANTHROPIC_BASE_URL": "https://api-tally-infra.icprivate.com/api/proxy/claude-code/claude-settings/010b0b4a-4826-461d-8b53-567c36995de3",
+    "ANTHROPIC_CUSTOM_HEADERS": "X-Tally-User: shaun.wang@instacart.com",
+    "ANTHROPIC_AUTH_TOKEN": "tally-managed",
+    "CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY": "1",
+    "OTEL_RESOURCE_ATTRIBUTES": "service.name=claude-code-cli,user.email=shaun.wang@instacart.com,provider=multi_provider"
   },
   "attribution": {
     "commit": "🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>"
@@ -39,16 +40,16 @@
       "Grep",
       "Task",
       "TodoWrite",
-      "WebFetch",
-      "WebSearch",
       "NotebookEdit",
       "NotebookRead",
       "AskUserQuestion",
+      "EnterWorktree",
       "Skill",
       "SlashCommand",
       "BashOutput",
       "KillShell",
       "Bash(curl:*)",
+      "Bash(git commit --no-verify*)",
       "mcp__buildkite__*",
       "mcp__glean_default__*",
       "mcp__glean__*",
@@ -96,7 +97,9 @@
       "Read(~/.npm/**)",
       "Read(~/.pypirc)",
       "Read(~/.gem/credentials)",
-      "Read(~/Library/Keychains/**)"
+      "Read(~/Library/Keychains/**)",
+      "WebFetch",
+      "WebSearch"
     ],
     "ask": [
       "Bash(rm:*)",
@@ -104,11 +107,33 @@
       "Edit(~/.bashrc)",
       "Edit(~/.zshrc)"
     ],
-    "defaultMode": "auto",
+    "defaultMode": "acceptEdits",
     "additionalDirectories": [
-      "/home/bento/.config/claude-code/skills"
+      "/home/bento/.config/claude-code/skills",
+      "/home/bento/grafts"
     ]
   },
+  "model": "claude-tally-glm-5.2-priority",
+  "availableModels": [
+    "claude-tally-opus-4-7",
+    "claude-tally-sonnet-4-6",
+    "claude-tally-haiku-4-5",
+    "claude-tally-gpt-5.6-sol",
+    "claude-tally-gpt-5.6-terra",
+    "claude-tally-gpt-5.6-luna",
+    "claude-tally-kimi-k3-priority",
+    "claude-tally-kimi-k3-priority[1m]",
+    "claude-tally-deepseek-v4-flash-0731-priority",
+    "claude-tally-deepseek-v4-flash-0731-priority[1m]",
+    "claude-tally-deepseek-v4-pro-priority",
+    "claude-tally-deepseek-v4-pro-priority[1m]",
+    "claude-tally-glm-5.2-priority",
+    "claude-tally-glm-5.2-priority[1m]",
+    "claude-tally-opus-4-8",
+    "claude-tally-opus-4-6",
+    "claude-tally-sonnet-5"
+  ],
+  "enforceAvailableModels": true,
   "hooks": {
     "SessionStart": [
       {
@@ -144,7 +169,18 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/bento/.claude/plugins/marketplaces/instacart/code-chef/hooks/scripts/pre-bash-guard.sh",
+            "command": "/home/bento/.claude/hooks/require-shaun-review.sh",
+            "timeout": 10,
+            "statusMessage": "Checking shaun-review gate..."
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/f3bb5d838e65/hooks/scripts/pre-bash-guard.sh",
             "timeout": 10,
             "statusMessage": "Checking guardrails..."
           }
@@ -156,7 +192,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/bento/.claude/plugins/marketplaces/instacart/code-chef/hooks/scripts/code-chef-enforcer.sh",
+            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/f3bb5d838e65/hooks/scripts/code-chef-enforcer.sh",
             "timeout": 5
           }
         ]
@@ -168,13 +204,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/bento/.claude/plugins/marketplaces/instacart/code-chef/hooks/scripts/session-autosave.sh",
+            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/f3bb5d838e65/hooks/scripts/session-autosave.sh",
             "timeout": 10,
             "async": true
           },
           {
             "type": "command",
-            "command": "/home/bento/.claude/plugins/marketplaces/instacart/code-chef/hooks/scripts/layer-notify.sh",
+            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/f3bb5d838e65/hooks/scripts/layer-notify.sh",
             "timeout": 10,
             "async": true
           }
@@ -183,7 +219,8 @@
     ]
   },
   "worktree": {
-    "baseRef": "fresh"
+    "baseRef": "fresh",
+    "bgIsolation": "none"
   },
   "statusLine": {
     "type": "command",
@@ -214,14 +251,18 @@
     }
   },
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-tally-gpt-5.6-luna": {
+      "effortLevel": "xhigh"
+    }
+  },
+  "autoCompactWindow": 1000000,
   "showClearContextOnPlanAccept": true,
   "askUserQuestionTimeout": "never",
   "theme": "light",
   "editorMode": "normal",
-  "preferredNotifChannel": "iterm2_with_bell",
-  "availableModels": [
-    "opus",
-    "sonnet",
-    "haiku"
-  ]
+  "preferredNotifChannel": "ghostty",
+  "autoCompactEnabled": true,
+  "feedbackDrafts": "off",
+  "teammateMode": "tmux"
 }
