@@ -1,60 +1,43 @@
 ---
 name: shaun-review
-description: Run the automated Shaun-persona review⇄fix⇄validate loop on a draft PR / current branch. Invoked by /shaun-review, typically by the agent that just created a PR, to review the change as Shaun would, auto-fix real blockers, enforce lint/tests, and either approve cleanly or escalate. Use when asked to "shaun review", "review as Shaun", or to run the review loop on a change.
+description: Review the current change / draft PR as Shaun would and report a simple list of things to fix, or approve it. Pure code review — no lint, no tests, no auto-fixes; the caller handles any fixes itself. Use when asked to "shaun review", "review as Shaun", or to review a change before PR.
 ---
 
 # Shaun Review
 
-Runs the **deterministic** review loop (`review-loop.sh`). The driver script — not
-you — owns the review⇄fix⇄re-review loop, so re-review after a fix is guaranteed.
-Your job is only to resolve the target and launch the driver, then surface its
-final report.
+A plain code review in Shaun's style. The output is a simple list of things to
+fix — or an approval if there's nothing worth fixing. The skill does NOT fix
+anything, run lint, or run tests; whoever invoked it reads the findings,
+decides what's worth addressing, and fixes it itself.
 
-## What the loop does (context)
-
-- Reviews the diff with the `shaun-reviewer` persona (default verdict = APPROVE;
-  blocks only on concrete correctness/design problems or violations of Shaun's
-  learned standards; style issues are non-blocking nits).
-- On REQUEST_CHANGES: a fixer addresses the blockers, scoped lint+tests run, and
-  the round is committed (`shaun-review: address round <k>`).
-- On APPROVE: the **full** lint+test suite runs as a final gate. Only if it is
-  green does the loop stop with "LGTM". If it's red, the failures become blockers
-  and the loop continues — it never ships red tests.
-- Terminates on: clean approval, no-progress escalation, or the round cap.
-- Feedback stays local (worktree files under `.shaun-review/` + verdict JSON). It
-  posts NO GitHub comments.
+The review criteria (persona, severity model, learned standards) already live
+in the `shaun-reviewer` agent definition (`~/.claude/agents/shaun-reviewer.md`)
+— do not restate them here; delegate to that agent.
 
 ## Steps
 
-1. **Resolve the target.** `$ARGUMENTS` may be empty, a branch, a PR number/URL,
-   or a path.
-   - Determine the working directory: if a path/worktree is given, `cd` there;
-     otherwise use the current worktree.
-   - The driver auto-resolves the base ref (PR base → `origin/master` →
-     `origin/main`). You normally do not need to pass one. If the user named a
-     specific base, pass it as the first arg.
+1. **Resolve the target.** `$ARGUMENTS` may be empty, a branch, a PR
+   number/URL, or a path.
+   - If a path/worktree is given, `cd` there; otherwise use the current
+     worktree.
+   - Determine the base ref: PR base → `origin/master` → `origin/main`.
    - Confirm there is actually a diff to review
      (`git diff --stat <base>...HEAD`). If the tree is clean vs base, report
      "nothing to review" and stop.
 
-2. **Launch the driver** from the worktree root:
-   ```bash
-   /home/bento/.claude/shaun-reviewer/review-loop.sh [base_ref]
-   ```
-   Let it run to completion. It prints a final report and writes
-   `.shaun-review/report.md`. Exit codes: `0` approved, `3` escalated / hit cap.
+2. **Review the diff.** Spawn the `shaun-reviewer` agent with the worktree
+   path and the base ref, asking for a plain-text findings list (severity,
+   `file:line`, and a one-line how-to-fix per finding) — not the verdict
+   JSON. If you cannot spawn agents, apply the shaun-reviewer persona from
+   its agent md directly.
 
-3. **Surface the result.** Relay the driver's final report to the user verbatim-ish:
-   - **Approved (exit 0):** state "LGTM", how many rounds, commits made, and list
-     any non-blocking nits.
-   - **Escalated / hit cap (exit 3):** state why it stopped (no-progress vs cap),
-     the remaining open blockers, commits made so far, and point at
-     `.shaun-review/verdict-round<k>.json` and the reviewer/fixer logs so the
-     human can take over.
+3. **Report.** Relay the findings as a simple list of things to fix, most
+   severe first, each with `file:line` and a one-line fix. Clearly label
+   which are correctness/design issues vs style nits, but don't block on
+   anything — the caller decides what to act on. If there's nothing worth
+   fixing, say it's approved and stop.
 
 ## Notes
 
-- Each round is its own commit, so the human can inspect or drop rounds.
-- Never post to GitHub; all feedback is local by design.
-- If `review-loop.sh` can't find a test command, the validation gate reports that
-  (it does not silently pass) — surface it.
+- Review only: no fixes, no commits, no lint, no tests, no GitHub posts.
+- After fixing findings, the caller can re-run `/shaun-review` for a re-check.
