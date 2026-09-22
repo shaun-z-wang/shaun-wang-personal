@@ -12,14 +12,14 @@
     "OTEL_METRICS_INCLUDE_VERSION": "true",
     "CLAUDE_CODE_ATTRIBUTION_HEADER": "0",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-tally-glm-5.2-priority[1m]",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL_NAME": "GLM 5.2 Priority (1M context)",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL": "claude-tally-glm-5.3",
+    "ANTHROPIC_DEFAULT_OPUS_MODEL_NAME": "GLM 5.3",
     "ANTHROPIC_DEFAULT_OPUS_MODEL_DESCRIPTION": "Tally-routed Opus alias",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-tally-gpt-5.6-luna",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL_NAME": "GPT-5.6 Luna",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL": "claude-tally-glm-5.3-flash[1m]",
+    "ANTHROPIC_DEFAULT_SONNET_MODEL_NAME": "GLM 5.3 Flash (1M context)",
     "ANTHROPIC_DEFAULT_SONNET_MODEL_DESCRIPTION": "Tally-routed Sonnet alias",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-tally-deepseek-v4-flash-0731-priority[1m]",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME": "DeepSeek V4 Flash 0731 Priority (1M context)",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-tally-glm-5.3-flash",
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL_NAME": "GLM 5.3 Flash",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL_DESCRIPTION": "Tally-routed Haiku alias",
     "ANTHROPIC_BASE_URL": "https://api-tally-infra.icprivate.com/api/proxy/claude-code/claude-settings/010b0b4a-4826-461d-8b53-567c36995de3",
     "ANTHROPIC_CUSTOM_HEADERS": "X-Tally-User: shaun.wang@instacart.com",
@@ -113,27 +113,7 @@
       "/home/bento/grafts"
     ]
   },
-  "model": "claude-tally-glm-5.2-priority",
-  "availableModels": [
-    "claude-tally-opus-4-7",
-    "claude-tally-sonnet-4-6",
-    "claude-tally-haiku-4-5",
-    "claude-tally-gpt-5.6-sol",
-    "claude-tally-gpt-5.6-terra",
-    "claude-tally-gpt-5.6-luna",
-    "claude-tally-kimi-k3-priority",
-    "claude-tally-kimi-k3-priority[1m]",
-    "claude-tally-deepseek-v4-flash-0731-priority",
-    "claude-tally-deepseek-v4-flash-0731-priority[1m]",
-    "claude-tally-deepseek-v4-pro-priority",
-    "claude-tally-deepseek-v4-pro-priority[1m]",
-    "claude-tally-glm-5.2-priority",
-    "claude-tally-glm-5.2-priority[1m]",
-    "claude-tally-opus-4-8",
-    "claude-tally-opus-4-6",
-    "claude-tally-sonnet-5"
-  ],
-  "enforceAvailableModels": true,
+  "model": "claude-tally-glm-5.3[1m]",
   "hooks": {
     "SessionStart": [
       {
@@ -169,18 +149,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/bento/.claude/hooks/require-shaun-review.sh",
-            "timeout": 10,
-            "statusMessage": "Checking shaun-review gate..."
-          }
-        ]
-      },
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/f3bb5d838e65/hooks/scripts/pre-bash-guard.sh",
+            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/ab34497eca34/hooks/scripts/pre-bash-guard.sh",
             "timeout": 10,
             "statusMessage": "Checking guardrails..."
           }
@@ -192,7 +161,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/f3bb5d838e65/hooks/scripts/code-chef-enforcer.sh",
+            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/ab34497eca34/hooks/scripts/code-chef-enforcer.sh",
             "timeout": 5
           }
         ]
@@ -204,13 +173,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/f3bb5d838e65/hooks/scripts/session-autosave.sh",
+            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/ab34497eca34/hooks/scripts/session-autosave.sh",
             "timeout": 10,
             "async": true
           },
           {
             "type": "command",
-            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/f3bb5d838e65/hooks/scripts/layer-notify.sh",
+            "command": "/home/bento/.claude/plugins/cache/instacart/code-chef/ab34497eca34/hooks/scripts/layer-notify.sh",
             "timeout": 10,
             "async": true
           }
@@ -234,7 +203,7 @@
     "google-docs@instacart": false,
     "slack@instacart": false,
     "rca-collaborator@instacart": true,
-    "code-chef@instacart": true,
+    "code-chef@instacart": false,
     "graft@instacart": true,
     "tmux-status@instacart": true,
     "thyme@instacart": true,
@@ -250,6 +219,7 @@
       }
     }
   },
+  "feedbackDrafts": "off",
   "effortLevel": "high",
   "modelSettings": {
     "claude-tally-gpt-5.6-luna": {
@@ -263,6 +233,110 @@
   "editorMode": "normal",
   "preferredNotifChannel": "ghostty",
   "autoCompactEnabled": true,
-  "feedbackDrafts": "off",
-  "teammateMode": "tmux"
+  "teammateMode": "tmux",
+  "modelPicker": {
+    "replaceBuiltInOptions": true,
+    "options": [
+      {
+        "model": "claude-tally-opus-4-7",
+        "label": "Claude Opus 4.7",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-sonnet-4-6",
+        "label": "Claude Sonnet 4.6",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-glm-5.3-flash",
+        "label": "GLM 5.3 Flash",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-glm-5.3-flash[1m]",
+        "label": "GLM 5.3 Flash (1M context)",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-gpt-5.6-sol",
+        "label": "GPT-5.6 Sol",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-glm-5.3",
+        "label": "GLM 5.3",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-glm-5.3[1m]",
+        "label": "GLM 5.3 (1M context)",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-kimi-k3-priority",
+        "label": "Kimi K3 Priority",
+        "description": "For reliability"
+      },
+      {
+        "model": "claude-tally-kimi-k3-priority[1m]",
+        "label": "Kimi K3 Priority (1M context)",
+        "description": "For reliability"
+      },
+      {
+        "model": "claude-tally-deepseek-v4p1-flash",
+        "label": "DeepSeek V4.1 Flash",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-deepseek-v4p1-flash[1m]",
+        "label": "DeepSeek V4.1 Flash (1M context)",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-deepseek-v4-pro-priority",
+        "label": "DeepSeek V4 Pro Priority",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-deepseek-v4-pro-priority[1m]",
+        "label": "DeepSeek V4 Pro Priority (1M context)",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-glm-5.2-priority",
+        "label": "GLM 5.2 Priority",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-glm-5.2-priority[1m]",
+        "label": "GLM 5.2 Priority (1M context)",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-opus-4-8",
+        "label": "Claude Opus 4.8",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-opus-4-6",
+        "label": "Claude Opus 4.6",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-sonnet-5",
+        "label": "Claude Sonnet 5",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-haiku-4-5",
+        "label": "Claude Haiku 4.5",
+        "description": "Through Tally"
+      },
+      {
+        "model": "claude-tally-gpt-5.6-terra",
+        "label": "GPT-5.6 Terra",
+        "description": "Through Tally"
+      }
+    ]
+  }
 }

@@ -19,6 +19,7 @@ Detect changes in local config files and sync them to `~/shaun-wang-personal`, t
 | `~/.claude/hooks/tmux-status.sh` | `~/shaun-wang-personal/claude/hooks/tmux-status.sh` | tmux-status hook |
 | `~/.claude/hooks/tmux-status/` | `~/shaun-wang-personal/claude/hooks/tmux-status/` | tmux-status hook directory |
 | `~/.claude/skills/*/SKILL.md` | `~/shaun-wang-personal/claude/skills/<name>/SKILL.md` | All skill definitions |
+| `~/.claude/output-styles/*.md` | `~/shaun-wang-personal/claude/output-styles/<name>.md` | Custom output styles |
 
 ## Excluded files (do NOT sync)
 

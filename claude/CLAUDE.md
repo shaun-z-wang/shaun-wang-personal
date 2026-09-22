@@ -11,7 +11,7 @@ graft new <branch-name> <project-path> --edit --sparse
 - Do NOT use `git checkout -b` or `git branch`. Graft creates an isolated worktree and opens a new editor window.
 - `--from origin/master` is the default. Use `--from <branch>` to base off a different branch.
 - If you need additional directories mid-task, run `graft add-dir /<path>` to expand the sparse checkout.
-- If the build breaks after pulling latest from master in a worktree (likely missing sparse dependencies), try `graft refresh` first before reaching for `graft add-dir`. Refresh re-resolves the sparse cone and usually fixes it.
+- If the build breaks after pulling latest from master in a worktree (likely missing sparse dependencies), use `graft refresh` to fix it. Refresh re-resolves the sparse cone and usually fixes it. **NEVER manually fix missing sparse dependencies** (no `graft add-dir`, no manual `git sparse-checkout` edits, no copying files in) — even if `graft refresh` doesn't immediately work. If refresh doesn't resolve it, report the problem to the user instead of working around it.
 - To clean up merged worktrees: `graft sync`.
 - To remove a specific worktree: `graft rm <branch-name>`.
 
